@@ -40,7 +40,7 @@ import java.io.InputStreamReader;
 3번 톱니바퀴의 12시방향이 N극이면 0점, S극이면 4점
 4번 톱니바퀴의 12시방향이 N극이면 0점, S극이면 8점
 */
-public class Main3 {
+public class Main {
 	public static final int WHEEL_NUM = 4;
 	public static final int WHEEL_TOOTH_NUM = 8;
 	public static final int RIGHT_ADJOIN_IDX = 2;
