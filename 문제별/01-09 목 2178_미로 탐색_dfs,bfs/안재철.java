@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/* 2178_미로 
+/* 2178_미로 탐색
 문제
 N×M크기의 배열로 표현되는 미로가 있다.
 
