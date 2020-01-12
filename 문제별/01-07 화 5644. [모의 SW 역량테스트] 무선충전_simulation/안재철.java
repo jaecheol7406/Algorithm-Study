@@ -81,28 +81,28 @@ public class Main {
 				maxb = Integer.max(maxb, bc.perf);
 		}
 		
-		// a, b µÑ´Ù ±âÁö±¹ ¹üÀ§¿¡ ¾ø´Â °æ¿ì
+		// a, b ë‘˜ë‹¤ ê¸°ì§€êµ­ ë²”ìœ„ì— ì—†ëŠ” ê²½ìš°
 		if(maxa == 0 && maxb == 0) {
 			if(move != M)
 				changePos(move);
 			return 0;
 		}
 		
-		// a¸¸ ±âÁö±¹ ¹üÀ§¿¡ ÀÖ´Â °æ¿ì
+		// aë§Œ ê¸°ì§€êµ­ ë²”ìœ„ì— ìˆëŠ” ê²½ìš°
 		if(maxa != 0 && maxb == 0) {
 			if(move != M)
 				changePos(move);
 			return maxa;
 		}
 		
-		// b¸¸ ±âÁö±¹ ¹üÀ§¿¡ ÀÖ´Â °æ¿ì
+		// bë§Œ ê¸°ì§€êµ­ ë²”ìœ„ì— ìˆëŠ” ê²½ìš°
 		if(maxa == 0 && maxb != 0) {
 			if(move != M)
 				changePos(move);
 			return maxb;
 		}
 		
-		// a, b ¸ğµÎ ±âÁö±¹ ¹üÀ§¿¡ ÀÖ´Â °æ¿ì
+		// a, b ëª¨ë‘ ê¸°ì§€êµ­ ë²”ìœ„ì— ìˆëŠ” ê²½ìš°, ëª¨ë“  ê²½ìš°ì˜ ìˆ˜ ì¤‘ ìµœëŒ€ê°’ return
 		
 		int max = 0;
 		for(int i = 0; i < BCCount; i++) {

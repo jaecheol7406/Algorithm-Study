@@ -48,11 +48,13 @@ public class Main3 {
 		int tempNum = wheelNum;
 		int tempDir = direction;
 		
-		// ����
+		// 왼쪽으로 굴리기
 		int rightWheelAdjoinIdx = wheels[wheelNum].charAt(LEFT_ADJOIN_IDX);
 		
 		while(--wheelNum >= 1) {
 			String left = wheels[wheelNum];
+			
+			// 인접 톱니의 극 같으면 회전 안함
 			if(left.charAt(RIGHT_ADJOIN_IDX) == rightWheelAdjoinIdx)
 				break;
 			
@@ -71,7 +73,7 @@ public class Main3 {
 		wheelNum = tempNum;
 		direction = tempDir;
 		
-		// ������
+		// 오른쪽으로 굴리기
 		int leftWheelAdjoinIdx = wheels[wheelNum].charAt(RIGHT_ADJOIN_IDX);
 		
 		while(++wheelNum <= WHEEL_NUM) {
@@ -91,16 +93,19 @@ public class Main3 {
 			}
 		}
 		
+		// 맨 처음 톱니바퀴 회전
 		if(tempDir == 1) 
 			rotationRight(tempNum);
 		else 
 			rotationLeft(tempNum);
 	}
 	
+	// 반시계방향 회전
 	static void rotationLeft(int wheelNum) {
 		wheels[wheelNum] = wheels[wheelNum].substring(1) + wheels[wheelNum].charAt(0);
 	}
 
+	// 시계방향 회전
 	static void rotationRight(int wheelNum) {
 		wheels[wheelNum] = wheels[wheelNum].charAt(WHEEL_TOOTH_NUM - 1) + wheels[wheelNum].substring(0, WHEEL_TOOTH_NUM - 1);
 	}

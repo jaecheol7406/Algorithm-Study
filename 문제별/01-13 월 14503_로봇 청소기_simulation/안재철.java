@@ -1,12 +1,12 @@
 import java.util.Scanner;
 
 
-/*¹®Á¦
+/*
 
 */
 
 public class Main4 {
-	public static final int[][] moveDir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // ºÏ, µ¿, ³², ¼­ (½Ã°è¹æÇâ)
+	public static final int[][] moveDir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // ï¿½ï¿½, ï¿½ï¿½, ï¿½ï¿½, ï¿½ï¿½ (ï¿½Ã°ï¿½ï¿½ï¿½ï¿½)
 	
 	static int N, M;
 	static int map[][];
