@@ -6,7 +6,7 @@ import java.util.Scanner;
 */
 
 public class Main4 {
-	public static final int[][] moveDir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // ��, ��, ��, �� (�ð����)
+	public static final int[][] moveDir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // 북 동 남 서
 	
 	static int N, M;
 	static int map[][];
