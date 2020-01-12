@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.util.Scanner;
 
+// 5644.무선충전
+
+// bc 표현 클래스
 class BC{
 	int[] loc;
 	int cover;
