@@ -30,8 +30,8 @@ import java.util.Scanner;
 로봇 청소기가 청소하는 칸의 개수를 출력한다.
 */
 
-public class Main4 {
-	public static final int[][] moveDir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // 북 동 남 서
+public class Main {
+	public static final int[][] moveDir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // 북 동 남 서 (시계방향)
 	
 	static int N, M;
 	static int map[][];
@@ -63,11 +63,14 @@ public class Main4 {
 	
 	static void clean() {
 		while(true) {
+			// 청소 표시
 			if(visit[x][y] == 0) {
 				visit[x][y] = 1;
 				cleanSize++;
 			}
 			boolean canGo = false;
+
+			// 반시계방향으로 4번 회전해본다. (현재 방향의 서쪽부터)
 			int turnTime = 4;
 			while(turnTime-- > 0) {
 				dir--;
@@ -90,21 +93,24 @@ public class Main4 {
 				break;
 			}
 			
+			// 청소 가능하면 이동
 			if(canGo)
 				continue;
 			
+			// 청소 불가능하면 후진
 			int backX = x, backY = y;
 			
-			if(dir % 2 == 1) {
-				if(dir == 1)
-					backY += moveDir[3][1];
-				else
-					backY += moveDir[1][1];
-			} else {
-				if(dir == 0)
-					backX += moveDir[2][0];
-				else
-					backX += moveDir[0][0];
+			// 현재 방향의 반대방향으로 후진
+			if(dir % 2 == 1) { // 현재 방향이 동, 서쪽일 경우
+				if(dir == 1) // 동쪽일 경우
+					backY += moveDir[3][1]; // 서쪽으로 후진
+				else // 서쪽일 경우
+					backY += moveDir[1][1]; // 동쪽으로 후진
+			} else { // 현재 방향이 남, 북쪽일 경우
+				if(dir == 0) // 북쪽일 경우
+					backX += moveDir[2][0]; // 남쪽으로 후진
+				else // 남쪽일 경우
+					backX += moveDir[0][0]; // 북쪽으로 후진
 			}
 			
 			if(!(0 < backX && backX < N - 1 && 0 < backY && backY < M - 1) || map[backX][backY] == 1)
