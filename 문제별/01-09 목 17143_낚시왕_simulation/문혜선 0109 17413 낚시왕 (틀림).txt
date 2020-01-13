@@ -1,0 +1,107 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+
+public class Main_제출용 {
+	static ArrayList<Shark> sharks;
+	static int R, C, M, sumZ=0;
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		R = sc.nextInt(); C = sc.nextInt(); M = sc.nextInt();
+		sharks = new ArrayList<>(M);
+		for (int i = 0; i < M; i++) {
+			sharks.add(new Shark(sc.nextInt() - 1, sc.nextInt() - 1, sc.nextInt(), sc.nextInt(), sc.nextInt()));
+			sc.nextLine();
+		}
+		sc.close();
+		
+		for(int man=0; man<C; man++) {
+			if(M==0) break;
+			sumZ += goFishing(man);
+			moveShark();
+			fightShark();
+		}
+		System.out.println(sumZ);
+	}
+//	R*C >= M이상인 경우 신경써야 한다
+	static int goFishing(int manC) {
+		int minR=Integer.MAX_VALUE;
+		Shark minShark = null;
+		for(Shark s : sharks) {
+			if(s.c == manC)
+				if(minR > s.r) {
+					minR = s.r;
+					minShark = s;
+				}
+		}
+		if (minShark == null) return 0;
+		else 
+			return sharks.remove(sharks.indexOf(minShark)).z;
+	}
+
+	static int dir[][] = {{0,0}, {-1,0}, {1,0}, {0,1}, {0,-1}};
+	static int UP=1, DOWN=2, RIGHT=3, LEFT=4;
+	static void moveShark() {
+		for(Shark shk : sharks) {
+			int x = shk.r, y=shk.c, modS = shk.s;
+			if(shk.d <= 2) 
+			{
+				if(modS > 2*(R-1)) modS %= 2*(R-1);
+				for(int i=0; i<modS; i++) 
+				{
+					x += dir[shk.d][0];
+					if(x<0) { shk.d = DOWN; x=1; }
+					if(x>=R) {shk.d = UP; x=R-2; }
+				}
+			}else 
+			{
+				if(modS > 2*(C-1)) modS %= 2*(C-1);
+				for(int i=0; i<modS; i++) 
+				{
+					y += dir[shk.d][1];
+					if(y<0) {shk.d = RIGHT; y=1;}
+					if(y>=C) {shk.d = LEFT; y=C-2;}
+				}
+			}
+			shk.r = x;
+			shk.c = y;
+		}
+	}
+
+	static void fightShark() {	
+		Collections.sort(sharks);//내림차순
+		for(int i=0; i<sharks.size()-1; i++) {
+			Shark s1 = sharks.get(i);
+			Shark s2 = sharks.get(i + 1);
+			
+			if(s1.r==s2.r && s1.c==s2.c) {
+				sharks.remove(i + 1);
+				i--;
+			}
+		}
+	}
+	public static class Shark implements Comparable<Shark>{
+		int r, c, s, d, z;
+		
+		public Shark(int r, int c, int s, int d, int z) {
+			this.r = r;
+			this.c = c;
+			this.s = s;
+			this.d = d;
+			this.z = z;
+		}
+
+		public int compareTo(int x, int y) {
+			if(this.r == x && this.c == y) return 0;
+			else return -1;
+		}
+
+		@Override
+		public int compareTo(Shark p) {
+			if(this.z > p.z) return -1;
+			else if(this.z < p.z)return 1;
+			else
+				return 0;
+		}
+	}
+}
