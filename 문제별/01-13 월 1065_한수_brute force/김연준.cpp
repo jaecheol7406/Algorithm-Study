@@ -1,10 +1,10 @@
-#include <iostream>
+ï»¿#include <iostream> //í•œê¸€ ê¹¨ì§ í…ŒìŠ¤íŠ¸
 #include <vector>
 using namespace std;
 void sol1(int N) {
 	int result = 0;
 	for (int i = 1; i <= N; i++) {
-		if (1 <= i && i <= 99) { //ÇÑÀÚ¸®, µÎÀÚ¸®ÀÎ °æ¿ì
+		if (1 <= i && i <= 99) { //í•œìë¦¬, ë‘ìë¦¬ì¸ ê²½ìš°
 			result++;
 		}
 		else if (i == 1000) {
@@ -26,8 +26,25 @@ void sol1(int N) {
 	}
 	cout << result << endl;
 }
-
+/*void sol2(int N) {
+	int result;
+	for (int i = 1; i <= N; i++) {
+		vector<int> list;
+		int tmp = i;
+		while (tmp != 0) {
+			list.push_back(tmp % 10);
+			tmp /= 10;
+		}
+		if (list.size() >= 3) {
+			for(int i=0;i<list)
+		}
+		else {
+			result++;
+		}
+	}
+}*/
 int main() {
+	cout << "ì—°ì¤€" << '\n';
 	int N;
 	cin >> N;
 	sol1(N);
