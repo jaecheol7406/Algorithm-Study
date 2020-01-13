@@ -1,4 +1,19 @@
 ﻿// 시간 초과는 안 나고, 틀렸습니다 나오는 코드
+/* 반례
+3 3 9
+1 1 1000 1 1
+1 2 999 2 2
+2 1 1000 3 3
+2 2 999 4 4
+1 3 1000 1 5
+3 1 999 2 6
+2 3 1000 3 7
+3 2 999 4 8
+3 3 1000 1 9
+
+answer: 8
+
+*/
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -89,11 +104,8 @@ int CheckDir(Shark thisShark) {
 }
 
 void Init() {
-	// newmap 초기화
-	// Shark emptyShark;
 	for (int i = 0; i < R; i++) {
 		for (int j = 0; j < C; j++) {
-			//newmap[i][j] = emptyShark;
 			map[i][j] = -1;
 		}
 	}
@@ -142,7 +154,6 @@ int main()
 			int seconds = sharkList[i].s % thisGoBack;
 
 			for (int second = 0; second < seconds; second++) {
-				// if (sharkList[i].s < second) continue;
 
 				// 방향 검사 및 보정
 				sharkList[i].d = CheckDir(sharkList[i]);
@@ -150,43 +161,24 @@ int main()
 				sharkList[i].r += dir[sharkList[i].d][0];
 				sharkList[i].c += dir[sharkList[i].d][1];
 			}
-			// 겹치는 애들이 있는지 확인 (newmap에는 이동을 이미 끝낸 애들만 들어있다)
+			// 겹치는 애들이 있는지 확인 (map에는 이동을 이미 끝낸 애들만 들어있다)
 			int idxToRemove;
-			/*if (newmap[sharkList[i].r][sharkList[i].c].idx != -1) { // 비어 있지 않으면
-				if (newmap[sharkList[i].r][sharkList[i].c].z > sharkList[i].z) {
-					idxToRemove = sharkList[i].idx;
-				}
-				else {
-					idxToRemove = newmap[sharkList[i].r][sharkList[i].c].z;
-					newmap[sharkList[i].r][sharkList[i].c] = sharkList[i];
-				}
-
-				// idxToRemove를 지운다
-				for (int q = 0; q < sharkList.size(); q++) {
-					if (sharkList[q].idx == idxToRemove) {
-						sharkList.erase(sharkList.begin() + q);
-						break;
-					}
-				}
-				if (i != sharkList.size() - 2) { // 지운 것 직후 번째가 움직이지 않는 문제
-					i--;
-				}
-
-			}
-			else { // 비어 있으면
-				newmap[sharkList[i].r][sharkList[i].c] = sharkList[i];
-			}*/
 			if (map[sharkList[i].r][sharkList[i].c] != -1) { // 비어 있지 않으면
 				int legacyIdx = map[sharkList[i].r][sharkList[i].c]; // 이전에 넣은 애가 현재 sharkList에서 몇 번째 인덱스인지
 				if (sharkList[legacyIdx].z > sharkList[i].z) { // 이전에 들어간 애가 더 크면
-					sharkList.erase(sharkList.begin() + i); // 이번 애를 지운다
+					// sharkList.erase(sharkList.begin() + i); // 이번 애를 지운다
+					idxToRemove = i;
 				}
 				else { // 이번 애가 더 크면
-					sharkList.erase(sharkList.begin() + legacyIdx);
+					// sharkList.erase(sharkList.begin() + legacyIdx);
+					idxToRemove = legacyIdx;
 					map[sharkList[i].r][sharkList[i].c] = i;
 				}
+				// i--;
+				sharkList.erase(sharkList.begin() + idxToRemove);
 				i--;
 			}
+
 			else {
 				map[sharkList[i].r][sharkList[i].c] = i;
 			}
