@@ -43,19 +43,19 @@ public class Main {
 		
 		int sum = 0;
 		for(int i = 0; i < 9; i++) {
-			int except1 = i;
+			int except1 = i; // 제외 1
 			for(int j = 0; j < 9; j++) {
-				if(j == except1)
+				if(j == except1) // 제외 1 이외
 					continue;
-				int except2 = j;
+				int except2 = j; // 제외 2
 				int reIdx = 0;
 				for(int k = 0; k < 9; k++) {
-					if(k != except1 && k != except2) {
+					if(k != except1 && k != except2) { // 제외 1, 제외 2 이외의 숫자들 
 						sum += arr[k];
 						re[reIdx++] = arr[k];
 					}
 				}
-				if(sum == 100) {
+				if(sum == 100) { // 100이면 정렬후 출력
 					Arrays.sort(re);
 					for(int l = 0; l < re.length; l++)
 						System.out.println(re[l]);
