@@ -37,7 +37,6 @@ public class Main {
 	
 	static int calcHansuNum(){
 		int hansuNum = 0;
-//		if(N <= 99)
 		for(int num = 1; num <= N; num++) {
 			if(isHansu(num))
 				hansuNum++;
