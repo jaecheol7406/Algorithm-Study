@@ -150,13 +150,6 @@ class Pos {
 
 	@Override
 	public int hashCode() {
-
-		final int prime = 31;
-		int hashCode = 1;
-
-		hashCode = prime * hashCode + this.x;
-		hashCode = prime * hashCode + this.y;
-
-		return hashCode;
+		return Objects.hash(x, y);
 	}
 }
