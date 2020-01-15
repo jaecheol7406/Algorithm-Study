@@ -11,7 +11,7 @@ public class Main4 {
 	static int T;
 	static int N, M, K;
 	static Cell[][] map;
-	static List<Pos> nodePosList; // 세포가 존재하는 곳의 좌표 리스트
+	static List<Pos> cellPosList; // 세포가 존재하는 곳의 좌표 리스트
 	static HashMap<Pos, Integer> propagateMap; // 번식된 세포의 좌표값과 생명력 정보를 해쉬로 관리
 
 	public static void main(String[] args){
@@ -22,7 +22,7 @@ public class Main4 {
 			M = sc.nextInt();
 			K = sc.nextInt();
 			map = new Cell[1001][1001]; // 배양용기
-			nodePosList = new ArrayList<>();
+			cellPosList = new ArrayList<>();
 
 			int startI = 500 - N / 2; // 배양용기의 중앙에 초기 상태 세포들 위치
 			int startJ = 500 - M / 2;
@@ -31,7 +31,7 @@ public class Main4 {
 					int life = sc.nextInt();
 					if(life != 0) {
 						map[i][j] = new Cell(life, Cell.INACTIVE, 0); // 생명력 있으면 비활성화 상태로 저장, 태어난 시간 0으로 저장
-						nodePosList.add(new Pos(i, j)); // 세포의 좌표 정보 리스트에 추가
+						cellPosList.add(new Pos(i, j)); // 세포의 좌표 정보 리스트에 추가
 					}
 				}
 			}
@@ -47,43 +47,43 @@ public class Main4 {
 		for(int time = 1; time <= K; time++) { // time : 전체 흘러간 시간
 			propagateMap = new HashMap<>(); // 번식 정보 초기화
 
-			for(Pos pos : nodePosList) { // 모든 세포에 대해
+			for(Pos pos : cellPosList) { // 모든 세포에 대해
 				int x = pos.x;
 				int y = pos.y;
 
-				Cell node = map[x][y];
+				Cell cell = map[x][y];
 				
 				// 죽었으면 무시
-				if(node.state == Cell.DEAD)
+				if(cell.state == Cell.DEAD)
 					continue;
 				
 				// 세포가 태어난 후 흘러간 시간
-				int passedTime = time - node.bornTime;
+				int passedTime = time - cell.bornTime;
 				
-				if(passedTime == node.life) // 그 시간이 생명력과 같아지면
-					node.state = Cell.ACTIVE; // 활성화
-				else if(passedTime == node.life + 1) // 활성화되고 1시간 지나면 
-					propagation(x, y, node.life); // 번식
+				if(passedTime == cell.life) // 그 시간이 생명력과 같아지면
+					cell.state = Cell.ACTIVE; // 활성화
+				else if(passedTime == cell.life + 1) // 활성화되고 1시간 지나면 
+					propagation(x, y, cell.life); // 번식
 
-				if(passedTime == node.life * 2) // 활성화 되고 생명력만큼 더 지나면
-					node.state = Cell.DEAD; // 주금
+				if(passedTime == cell.life * 2) // 활성화 되고 생명력만큼 더 지나면
+					cell.state = Cell.DEAD; // 주금
 
-				map[x][y] = node;
+				map[x][y] = cell;
 			}
 			
 			// 번식된 세포 update
 			for(Pos pos : propagateMap.keySet()) {
 				map[pos.x][pos.y] = new Cell(propagateMap.get(pos), Cell.INACTIVE, time);
-				nodePosList.add(pos);
+				cellPosList.add(pos);
 			}
 		}
 		
 		int alive = 0;
 		
 		// 죽지 않은 세포만 count
-		for(Pos pos : nodePosList) {
-			Cell node = map[pos.x][pos.y];
-			if(node.state != Cell.DEAD)
+		for(Pos pos : cellPosList) {
+			Cell cell = map[pos.x][pos.y];
+			if(cell.state != Cell.DEAD)
 				alive++;
 		}
 
