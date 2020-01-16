@@ -1,8 +1,10 @@
-// Input을 잘 못 받아오고 있음
+// 초기화를 1000만큼 해야하는데 R,C만큼 -> 500 만큼으로 계속 실수함
+// SWEA는 Cell{} 의 문법을 지원하지 않아 수정
 
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <string.h>
 using namespace std;
 
 int R, C, T;
@@ -24,14 +26,14 @@ void Init() {
 	cellList.clear();
 	addedCell.clear();
 	
-	for (int i = 0; i < bojeong; i++) {
-		memset(map[i], 0, sizeof(int) * bojeong);
+	for (int i = 0; i < 1000; i++) {
+		memset(map[i], 0, sizeof(int) * 1000);
 	}
 }
 
 void InitNewMap() {
-	for (int j = 0; j < bojeong; j++) {
-		memset(newMap[j], 0, sizeof(int) * bojeong);
+	for (int j = 0; j < 1000; j++) {
+		memset(newMap[j], 0, sizeof(int) * 1000);
 	}
 }
 
@@ -46,7 +48,12 @@ void Input() {
 			scanf("%d ", &hpFix);
 			if (hpFix != 0) {
 				map[i + bojeong][j + bojeong] = hpFix;
-				cellList.push_back(Cell{ i + bojeong, j + bojeong, hpFix, 0 });
+				Cell newCell;
+				newCell.r = i + bojeong;
+				newCell.c = j + bojeong;
+				newCell.hpFix = hpFix;
+				newCell.hpNow = 0;
+				cellList.push_back(newCell);
 			}
 
 		}
@@ -77,7 +84,10 @@ void Grow(int r, int c) {
 		if (map[rtmp][ctmp] == -1 || map[rtmp][ctmp] != 0) continue; // 죽은 애가 있는 자리는 pass
 
 		if (newMap[rtmp][ctmp] == 0) {
-			addedCell.push_back(Cell{ rtmp, ctmp, map[r][c], 0 });
+			Cell newCell;
+			newCell.r = rtmp; newCell.c = ctmp;
+			newCell.hpFix = map[r][c]; newCell.hpNow = 0;
+			addedCell.push_back(newCell);
 			map[rtmp][ctmp] = map[r][c];
 			newMap[rtmp][ctmp] = map[r][c];
 		}
@@ -146,7 +156,8 @@ int main() {
 			addedCell.clear();
 		}
 
-		cout << cellList.size() << endl;
+		
+		printf("#%d %d\n", t+1, cellList.size());
 
 	}
 
