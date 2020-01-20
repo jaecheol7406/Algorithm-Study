@@ -56,25 +56,30 @@ public class Main {
 			for(int j = 0; j < N; j++) {
 				int prev = 0;
 				int newIdx = 0;
+				
 				for(int i = 0; i < N; i++) {
-					int value = temp[i][j];
-					if(value == 0)
+					int cur = temp[i][j];
+					if(cur == 0)
 						continue;
 					
-					if(prev == 0)
-						prev = temp[i][j];
-					else {
-						if(prev == temp[i][j]) {
-							temp[newIdx++][j] = prev * 2;
-							prev = 0;
-						} else {
-							temp[newIdx++][j] = prev;
-							prev = temp[i][j];
-						}
+					if(prev == 0) {
+						prev = cur;
+						continue;
 					}
+					
+					if(prev == cur) {
+						temp[newIdx++][j] = prev * 2;
+						prev = 0;
+					} else {
+						temp[newIdx++][j] = prev;
+						prev = cur;
+					}
+					
 				}
+				
 				if(prev != 0)
 					temp[newIdx++][j] = prev;
+				
 				for(int i = newIdx; i < N; i++)
 					temp[i][j] = 0;
 			}
