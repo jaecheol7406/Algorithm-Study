@@ -50,9 +50,9 @@ using namespace std;
 int N;
 typedef int(*Temp)[30];
 
-Temp Input() {
+int (*Input())[30] {
 	scanf("%d\n", &N);
-	int map[30][30];
+	int map[30][30]; 
 	
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
@@ -71,7 +71,7 @@ void Print(Temp map) {
 	}
 }
 
-Temp GoNorth(Temp map) {
+int (*GoNorth(Temp map))[30] {
 	for (int j = 0; j < N; j++) {
 		int idx = 0;
 		for (int i = 1; i < N; i++) {
@@ -86,7 +86,12 @@ Temp GoNorth(Temp map) {
 						map[i][j] = 0;
 					}
 					else {
-						idx++;
+ 						// idx++;
+						map[++idx][j] = map[i][j];
+						if (idx != i) {
+							map[i][j] = 0;
+						}
+							
 					}
 				}
 			}
@@ -95,7 +100,7 @@ Temp GoNorth(Temp map) {
 	return map;
 }
 
-Temp GoSouth(Temp map) {
+int (*GoSouth(Temp map))[30] {
 	for (int j = 0; j < N; j++) {
 		int idx = N - 1;
 		for (int i = N-2; i >= 0; i--) {
@@ -110,7 +115,11 @@ Temp GoSouth(Temp map) {
 						map[i][j] = 0;
 					}
 					else {
-						idx--;
+						// idx--;
+						map[--idx][j] = map[i][j];
+						if (idx != i) {
+							map[i][j] = 0;
+						}
 					}
 				}
 			}
@@ -119,7 +128,7 @@ Temp GoSouth(Temp map) {
 	return map;
 }
 
-Temp GoRight(Temp map) {
+int (*GoRight(Temp map))[30] {
 	for (int i = 0; i < N; i++) {
 		int idx = N - 1;
 		for (int j = N - 2; j >= 0; j--) {
@@ -134,7 +143,11 @@ Temp GoRight(Temp map) {
 						map[i][j] = 0;
 					}
 					else {
-						idx--;
+						// idx--;
+						map[i][--idx] = map[i][j];
+						if (idx != i) {
+							map[i][j] = 0;
+						}
 					}
 				}
 			}
@@ -143,7 +156,7 @@ Temp GoRight(Temp map) {
 	return map;
 }
 
-Temp GoLeft(Temp map) {
+int (*GoLeft(Temp map))[30] {
 	for (int i = 0; i < N; i++) {
 		int idx = 0;
 		for (int j = 1; j < N; j++) {
@@ -158,7 +171,11 @@ Temp GoLeft(Temp map) {
 						map[i][j] = 0;
 					}
 					else {
-						idx++;
+						// idx++;
+						map[i][++idx] = map[i][j];
+						if (idx != i) {
+							map[i][j] = 0;
+						}
 					}
 				}
 			}
@@ -168,7 +185,7 @@ Temp GoLeft(Temp map) {
 }
 int maxNum = 0;
 
-void DFS(Temp map, int dir, int cnt) {
+void DFS(int (*map)[30], int dir, int cnt) {
 	if (cnt >= 6) {
 		// 가장 큰 수를 maxNum과 비교
 		for (int i = 0; i < N; i++) {
