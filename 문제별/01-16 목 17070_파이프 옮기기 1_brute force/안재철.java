@@ -2,7 +2,7 @@ import java.util.Scanner;
 /* 
  * 17070_파이프 옮기기 1
  */
-public class Main4 {
+public class Main {
 	public static final int HORIZONTAL = 0;
 	public static final int VERTICAL = 1;
 	public static final int DIAGONAL = 2;

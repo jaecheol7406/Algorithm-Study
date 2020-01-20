@@ -43,7 +43,7 @@ import java.util.Scanner;
 예제 출력 1 
 22
 */
-public class Main4 {
+public class Main {
 	
 	public static final int[][] moveDir = new int[][]{{0, 0}, {-1, 0}, {1, 0}, {0, 1}, {0, -1}}; // 북 남 동 서
 

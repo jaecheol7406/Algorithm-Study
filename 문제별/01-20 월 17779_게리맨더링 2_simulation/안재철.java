@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 /* 17779_게리맨더링 2
  */
-public class Main4 {
+public class Main {
 	
 	static int N;
 	static int[][] map;
@@ -11,7 +11,14 @@ public class Main4 {
 	static int re = Integer.MAX_VALUE;
 	
 	public static void main(String[] args){
+		input();
+		solve();
+		System.out.println(re);
+	}
+	
+	static void input() {
 		Scanner sc = new Scanner(System.in);
+		
 		N = sc.nextInt();
 		map = new int[N + 1][N + 1];
 		partition = new int[N + 1][N + 1];
@@ -20,8 +27,7 @@ public class Main4 {
 			for(int j = 1; j <= N; j++)
 				map[i][j] = sc.nextInt();
 		}
-		solve();
-		System.out.println(re);
+		
 		sc.close();
 	}
 	

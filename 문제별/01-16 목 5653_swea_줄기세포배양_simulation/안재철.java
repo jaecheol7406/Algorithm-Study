@@ -5,7 +5,7 @@ import java.util.Scanner;
 /* 
 5653. [모의 SW 역량테스트] 줄기세포배양
  */
-public class Main4 {
+public class Main {
 	public static final int[][] moveDir = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}; // 동, 서, 남, 북
 
 	static int T;
