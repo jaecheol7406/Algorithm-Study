@@ -1,16 +1,3 @@
-/*
-8
-1 2 3 4 5 6 7 8
-2 3 4 5 6 7 8 9
-3 4 5 6 7 8 9 1
-4 5 6 7 8 9 1 2
-5 6 7 8 9 1 2 3
-6 7 8 9 1 2 3 4
-7 8 9 1 2 3 4 5
-8 9 1 2 3 4 5 6
-
-23
-*/
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -74,11 +61,11 @@ int GetSecond(int x, int y, int d1, int d2) {
 
 int GetThird(int x, int y, int d1, int d2) {
 	int sum = 0;
-	int j = 1;
-	int tmp = x + d1; // 예외처리
-	if (y - d1 <= 1) tmp++;
+	int j = y - d1 - 1;
+	int tmp = x + d1; 
+	// if (y - d1 <= 1) tmp++;
 	for (int i = tmp; i <= N; i++) {
-		
+		if (j < 1) continue;
 		
 		sum += Sum[i][j];
 		if (i < x + d1 + d2 ) {
@@ -107,11 +94,12 @@ int main() {
 	MakeSum();
 	
 	int minDiff = 40000;
-	for (int i = 1; i <= N; i++) {
+	for (int i = 1; i <= N - 2; i++) {
 		for (int j = 2; j <= N-1; j++) {
 			for (int d1 = 1; d1 <= j - 1; d1++) {
 				for (int d2 = 1; d2 <= N - j; d2++) {
 					if (i + d1 + d2 > N) continue;
+					// if (!(i + d1 + d2 <= N && 1 <= j - d1 && j + d2 <= N)) continue;
 					vector<int> mans;
 					
 					mans.push_back(GetFirst(i, j, d1, d2));
