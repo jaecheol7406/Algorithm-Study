@@ -1,6 +1,7 @@
+// 162552 KB, 1008 ms, 2658 B
 import java.util.Scanner;
 
-public class 테트로미노 {
+public class 테트로미노_내풀이 {
 	static int N, M, resultMax=0;
 	static int[][] A;
 	public static void main(String[] args) {
@@ -57,7 +58,7 @@ public class 테트로미노 {
 				if (A[i][j+1] + resultMax < sum6) {// 24 25 26
 					resultMax = Math.max(sum6- A[i][j+1] - A[i+1][j+1], resultMax);
 					resultMax = Math.max(sum6- A[i][j+1] - A[i+2][j], resultMax);
-					resultMax = Math.max(sum6- A[i][j+1] - A[i+1][j+1], resultMax);
+					resultMax = Math.max(sum6- A[i][j+1] - A[i+2][j+1], resultMax);
 				}
 				resultMax = Math.max(sum6- A[i+1][j] - A[i+2][j], resultMax);//35
 				resultMax = Math.max(sum6- A[i+1][j+1] - A[i+2][j+1], resultMax);//46
@@ -85,3 +86,13 @@ public class 테트로미노 {
 			}
 	}   
 }
+/*
+4 4
+0 0 0 0
+0 0 1 0
+0 0 2 3
+0 0 4 0
+
+에서 9라고 오답뜬다! -> 고침(오타)
+
+*/
