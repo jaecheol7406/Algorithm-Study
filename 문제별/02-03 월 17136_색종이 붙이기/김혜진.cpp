@@ -1,37 +1,26 @@
 /*
- * 20% 틀렸습니다 
- * 반례
-1 1 1 1 1 1 1 0 0 0
-1 1 1 1 1 1 1 0 0 0
-1 1 1 1 1 1 1 0 0 0
-1 1 1 1 1 1 1 0 0 0
-1 1 1 1 1 1 1 0 0 0
-1 1 1 1 1 0 0 0 0 0
-1 1 1 1 1 0 0 0 0 0
-1 1 1 1 1 0 0 0 0 0
-1 1 1 1 1 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0
+ * cands.size() 갑자기 변화하여 종료가 제대로 되지 않음
 */
-
 #include <iostream>
 #include <vector>
 using namespace std;
 
-struct Point {
+struct Pos {
 	int r;
 	int c;
 };
 
 int map[10][10];
 int visited[10][10];
-vector<int> sizes;
-vector<Point> cands;
+vector<Pos> cands;
 
 void Input() {
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
 			scanf("%d ", &map[i][j]);
-			if (map[i][j] == 1) cands.push_back(Point{i, j});
+			if (map[i][j] == 1) {
+				cands.push_back(Pos{ i, j });
+			}
 		}
 	}
 }
@@ -41,167 +30,116 @@ void Print() {
 		for (int j = 0; j < 10; j++) {
 			printf("%d ", map[i][j]);
 		}
-		printf("\n");
+		cout << endl;
+	}
+
+	for (int i = 0; i < cands.size(); i++) {
+		cout << cands[i].r << ", " << cands[i].c << endl;
 	}
 }
 
-void CheckSize(int r, int c) {
-	cout << "r: " << r << " c: " << c << endl;
-	int stdR, stdC;
-	int nums = 0;
-
-	// 모든 좌표에 대해 1 ~ 5 사이즈 검사하는 코드
-	/*for (int n = 1; n < 5; n++) { // 길이가 2인지부터 5인지까지 4번 확인한다
-		
-		stdR = r + n;
-		stdC = c + n;
-		// cout << "stdR: " << stdR << " stdC: " << stdC << endl;
-		if (10 <= stdR || 10 <= stdC) {
-			sizes.push_back(n);
-			return;
+void PrintVisited() {
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			printf("%d ", visited[i][j]);
 		}
-		
-		for (int i = r; i <= stdR; i++) {
-			for (int j = c; j <= stdC; j++) {
-				if (map[i][j] == 1 && visited[i][j] != 1) {
-					nums++;
-					visited[i][j] = 1;
-				}
-			}
-		}
-		// cout << "nums: " << nums << endl;
-		
-		if (nums != (n+1) * (n+1)) {
-			sizes.push_back(n);
-			// cout << "push " << n << endl;
-
-			for (int i = c; i <= stdC; i++) {
-				visited[stdR][i] = 0;
-			}
-			for (int i = r; i <= stdR; i++) {
-				visited[i][stdC] = 0;
-			}
-
-			return;
-		}
-		
+		cout << endl;
 	}
-	// 길이가 5짜리
-	sizes.push_back(5);*/
-
-	// 모든 좌표에 대해 사이즈 5~1 검사하는 코드
-	for (int n = 4; n >= 0; n--) {
-		nums = 0;
-		stdR = r + n;
-		stdC = c + n;
-		// cout << "stdR: " << stdR << " stdC: " << stdC << endl;
-
-		if (10 <= stdR || 10 <= stdC) {
-			continue;
-		}
-
-		for (int i = r; i <= stdR; i++) {
-			for (int j = c; j <= stdC; j++) {
-				if (map[i][j] == 1 && visited[i][j] != 1) {
-					nums++;
-					// visited[i][j] = 1;
-				}
-			}
-		}
-		cout << nums << endl;
-
-		if (nums == (n + 1) * (n + 1)) {
-			sizes.push_back(n + 1);
-
-			for (int i = r; i <= stdR; i++) {
-				for (int j = c; j <= stdC; j++) {
-					visited[i][j] = 1;
-				}
-			}
-			return;
-		}
-	}
-	
+	cout << endl;
 }
 
-void Check(int r, int c, int len) {
-	int stdR = r + len;
-	int stdC = c + len;
+bool isDone() {
+	for (int i = 0; i < cands.size(); i++) {
+		if (visited[cands[i].r][cands[i].c] == 1) return false;
+	}
+	return true;
+}
 
-	int num = 0;
-	for (int i = r; i < stdR; i++) {
-		for (int j = c; j < stdC; j++) {
-			if(map[i][j] == 1 && visited[i][j] == 0)
-				num++;
+bool Paste(int r, int c, int size) {
+	int stdR = r + (size - 1);
+	int stdC = c + (size - 1);
+
+	if (10 <= stdR || 10 <= stdC) return false;
+
+	for (int i = r; i <= stdR; i++) {
+		for (int j = c; j <= stdC; j++) {
+			if (map[i][j] != 1 || visited[i][j] == 1) {
+				return false;
+			}
+			cout << "i: " << i << " j: " << j << endl;
+			visited[i][j] = 1;
 		}
 	}
+	return true;
+}
 
-	if (num == len * len) {
-		sizes.push_back(len);
-		for (int i = r; i < stdR; i++) {
-			for (int j = c; j < stdC; j++) {
-				visited[i][j] = 1;
-			}
+void UndoVisit(int r, int c, int size) {
+	int stdR = r + (size - 1);
+	int stdC = c + (size - 1);
+
+	for (int i = r; i <= stdR; i++) {
+		for (int j = c; j <= stdC; j++) {
+			visited[i][j] = 0;
 		}
+	}
+}
+
+int papers[6] = {0, 5, 5, 5, 5, 5};
+int Min = -1;
+void DFS(int n) {
+	cout << "dfs n: " << n << " max: " << cands.size() <<  endl;
+
+	if (n >= cands.size()) {
+		cout << "종료조건" << endl;
+		/*if (isDone()) {
+			int used = 25;
+			for (int i = 1; i < 6; i++) {
+				used -= papers[i];
+			}
+			cout << used << endl;
+			if (used > 0 && Min > used) {
+				Min = used;
+			}
+		}*/
+		return;
+	}
+
+	int thisR = cands[n].r;
+	int thisC = cands[n].c;
+
+	if (visited[thisR][thisC] == 1) {
+		DFS(n + 1);
+		return;
+	}
+
+	for (int size = 5; size >= 1; size--) {
+		cout << "size: " << size << endl;
+		if (Paste(thisR, thisC, size)) {
+			papers[size]--;
+
+			if (papers[size] < 0) { // 백트래킹
+				papers[size]++;
+				return;
+			}
+
+			DFS(n + 1);
+
+			UndoVisit(thisR, thisC, size);
+			papers[size]++;
+			
+		}
+		else{
+			UndoVisit(thisR, thisC, size);
+		}
+		PrintVisited();
 	}
 }
 
 int main() {
 	Input();
-
-	/*for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			if (map[i][j] == 1 && visited[i][j] != 1) {
-				CheckSize(i, j);
-			}
-		}
-	}*/
-
-	/*for (int i = 0; i < cands.size(); i++) {
-		Check(cands[i].r, cands[i].c, 5);
-	}*/
-
-	for (int n = 5; n >= 1; n--) {
-		for (int i = 0; i < cands.size(); i++) {
-			Check(cands[i].r, cands[i].c, n);
-		}
-	}
-
-	// 필요 색종이 리스트
-	for (int i = 0; i < sizes.size(); i++) {
-		cout << sizes[i] << " ";
-	}
-	cout << endl;
-
-	int rems[6] = {0, 5, 5, 5, 5, 5};
-
-	// 사용 전
-	/*for (int i = 1; i < 6; i++) {
-		cout << rems[i] << " ";
-	}
-	cout << endl;*/
-
-	int used = 0;
-	for (int i = 0; i < sizes.size(); i++) {
-		rems[sizes[i]]--;
-		used++;
-	}
-
-	// 사용 후
-	/*for (int i = 1; i < 6; i++) {
-		cout << rems[i] << " ";
-	}
-	cout << endl;*/
-
-	for (int i = 1; i < 6; i++) {
-		if (rems[i] < 0) {
-			cout << "-1";
-			return 0;
-		}
-		
-	}
-
-	cout << used;
-
+	
+	DFS(0);
+	cout << Min << endl;
+	
 	return 0;
 }
