@@ -1,5 +1,16 @@
 /*
- * cands.size() 갑자기 변화하여 종료가 제대로 되지 않음
+0 0 0 0 0 0 0 0 0 0
+0 1 1 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0 0 0
+0 0 1 1 1 1 1 0 0 0
+0 0 0 1 1 1 1 0 0 0
+0 0 0 0 1 1 1 0 0 0
+0 0 1 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+답: 7
+dfs(7)에서 고른 visited 유지가 잘 되지 않고 있음
 */
 #include <iostream>
 #include <vector>
@@ -10,9 +21,10 @@ struct Pos {
 	int c;
 };
 
-int map[10][10];
-int visited[10][10];
+int map[15][15];
+int visited[15][15];
 vector<Pos> cands;
+int candsNum;
 
 void Input() {
 	for (int i = 0; i < 10; i++) {
@@ -20,6 +32,7 @@ void Input() {
 			scanf("%d ", &map[i][j]);
 			if (map[i][j] == 1) {
 				cands.push_back(Pos{ i, j });
+				candsNum++;
 			}
 		}
 	}
@@ -33,7 +46,7 @@ void Print() {
 		cout << endl;
 	}
 
-	for (int i = 0; i < cands.size(); i++) {
+	for (int i = 0; i < candsNum; i++) {
 		cout << cands[i].r << ", " << cands[i].c << endl;
 	}
 }
@@ -49,8 +62,8 @@ void PrintVisited() {
 }
 
 bool isDone() {
-	for (int i = 0; i < cands.size(); i++) {
-		if (visited[cands[i].r][cands[i].c] == 1) return false;
+	for (int i = 0; i < candsNum; i++) {
+		if (visited[cands[i].r][cands[i].c] == 0) return false;
 	}
 	return true;
 }
@@ -66,11 +79,21 @@ bool Paste(int r, int c, int size) {
 			if (map[i][j] != 1 || visited[i][j] == 1) {
 				return false;
 			}
-			cout << "i: " << i << " j: " << j << endl;
-			visited[i][j] = 1;
+			// visited[i][j] = 1;
 		}
 	}
 	return true;
+}
+
+void DoVisit(int r, int c, int size) {
+	int stdR = r + (size - 1);
+	int stdC = c + (size - 1);
+
+	for (int i = r; i <= stdR; i++) {
+		for (int j = c; j <= stdC; j++) {
+			visited[i][j] = 1;
+		}
+	}
 }
 
 void UndoVisit(int r, int c, int size) {
@@ -84,23 +107,23 @@ void UndoVisit(int r, int c, int size) {
 	}
 }
 
-int papers[6] = {0, 5, 5, 5, 5, 5};
-int Min = -1;
+int papers[6] = { 0, 5, 5, 5, 5, 5 };
+int Min = 999999;
 void DFS(int n) {
-	cout << "dfs n: " << n << " max: " << cands.size() <<  endl;
+	cout << "======================================" << endl;
+	cout << "DFS(" << n << ") max: " << candsNum << endl;
 
-	if (n >= cands.size()) {
-		cout << "종료조건" << endl;
-		/*if (isDone()) {
+	if (n >= candsNum) {
+		if (isDone()) {
 			int used = 25;
 			for (int i = 1; i < 6; i++) {
 				used -= papers[i];
 			}
-			cout << used << endl;
-			if (used > 0 && Min > used) {
+			cout << "used: " << used << endl;
+			if (Min > used) {
 				Min = used;
 			}
-		}*/
+		}
 		return;
 	}
 
@@ -109,37 +132,50 @@ void DFS(int n) {
 
 	if (visited[thisR][thisC] == 1) {
 		DFS(n + 1);
-		return;
+		// return;
 	}
-
+	
 	for (int size = 5; size >= 1; size--) {
-		cout << "size: " << size << endl;
+		// cout << "size: " << size << endl;
 		if (Paste(thisR, thisC, size)) {
 			papers[size]--;
 
 			if (papers[size] < 0) { // 백트래킹
+				cout << "backtracking!!" << endl;
 				papers[size]++;
 				return;
 			}
+
+			DoVisit(thisR, thisC, size);
+
+			cout << "pick  " << size << "  for dfs(" << n << ")" << endl;
+			PrintVisited();
 
 			DFS(n + 1);
 
 			UndoVisit(thisR, thisC, size);
 			papers[size]++;
-			
+
 		}
-		else{
+		else {
 			UndoVisit(thisR, thisC, size);
 		}
-		PrintVisited();
+		// PrintVisited();
 	}
 }
 
 int main() {
 	Input();
-	
+
 	DFS(0);
-	cout << Min << endl;
+
+	if (Min == 999999) {
+		cout << "-1";
+	}
+	else {
+		cout << Min << endl;
+	}
 	
+
 	return 0;
 }
