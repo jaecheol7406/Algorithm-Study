@@ -12,6 +12,9 @@ int map[15][15];
 int island[15][15];
 int visited[15][15];
 vector<Pos> ones;
+vector<Pos> IslandStartPos; // [1]번은 1번 섬의 시작점(가장 왼쪽 위)
+
+int distance[10][10]; // [a]번 섬에서 [b]번 섬으로 건너가는 최소의 수
 
 void Input() {
 	scanf("%d %d\n", &R, &C);
@@ -34,8 +37,6 @@ void Print() {
 	}
 }
 
-int Width[10][20][2]; // [섬번호][행번호][0: 시작점 1:끝점], 특정 행에서 섬의 열번호를 기록한다
-int Height[10][20][2];
 
 int isCnt = 1;
 int dir[4][2] = { {1, 0}, {0, 1}, {-1, 0}, {0, -1} };
@@ -52,18 +53,6 @@ void DFS(int thisR, int thisC) {
 		if (tmpR < 0 || R <= tmpR || tmpC < 0 || C <= tmpC) continue;
 		if (map[tmpR][tmpC] == 1 && visited[tmpR][tmpC] == 0) {
 
-			/*if (tmpC > Width[isCnt][thisR][1]) {
-				Width[isCnt][thisR][1] = tmpC;
-			}
-			if (tmpC < Width[isCnt][thisR][0]) {
-				Width[isCnt][thisR][0] = tmpC;
-			}
-			if (tmpR > Height[isCnt][thisC][1]) {
-				Height[isCnt][thisC][1] = tmpR;
-			}
-			if (tmpR < Height[isCnt][thisC][0]) {
-				Height[isCnt][thisC][0] = tmpR;
-			}*/
 
 			DFS(tmpR, tmpC);
 			island[tmpR][tmpC] = isCnt;
@@ -104,26 +93,32 @@ void Pick(int cnt) {
 	}
 }
 
+void PrintStart() {
+	cout << "시작점===============" << endl;
+	for (int i = 1; i < isCnt; i++) {
+		cout << i << "번 섬의 시작점: " << IslandStartPos[i].r << ", " << IslandStartPos[i].c << endl;
+	}
+	cout << endl;
+}
+
 int main() {
 
 	Input();
+	IslandStartPos.push_back(Pos{ 0,0 }); // 섬 id와 일치시키기 위한 dummy data
 
 	for (int i = 0; i < ones.size(); i++) { // island 배열 만들기
 		int thisR = ones[i].r;
 		int thisC = ones[i].c;
 		if (visited[thisR][thisC] == 0) {
-			// 초기화
-			/*Width[isCnt][thisR][0] = thisC;
-			Width[isCnt][thisR][1] = thisC;
-			Height[isCnt][thisC][0] = thisR;
-			Height[isCnt][thisC][1] = thisR;*/
 
 			DFS(thisR, thisC);
+			IslandStartPos.push_back(Pos{ thisR, thisC });
 			isCnt++;
 		}
 	}
 
-	Print();
+	Print(); // 섬 id 프린트
+	PrintStart(); // 각 섬의 시작점 프린트
 
 	// 섬 id로 순열 뽑기
 	Pick(0);
