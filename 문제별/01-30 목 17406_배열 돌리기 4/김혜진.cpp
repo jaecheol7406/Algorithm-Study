@@ -24,7 +24,6 @@ void Init();
 
 #define MAX 10
 bool Select[MAX];
-vector<int> V;
 void DFS(int cnt);
 
 int MIN = 6000;
@@ -34,11 +33,6 @@ int main() {
 
 	DFS(0);
 
-	/*for (int i = 0; i < Infos.size(); i++) {
-		Turn(Infos[i].xStart, Infos[i].yStart, Infos[i].xEnd, Infos[i].yEnd, Infos[i].n);
-		Print();
-		printf("최솟값: %d\n", GetMin());
-	}*/
 	cout << MIN;
 
 
@@ -132,87 +126,45 @@ int GetMin() {
 	return min;
 }
 
-/*void Init() {
-	for (int i = 1; i < R; i++) {
-		for (int j = 1; j < C; j++) {
-			map[i][j] = backup[i][j];
-		}
-	}
-}*/
-
-void PrintPermutation() {
-	for (int i = 0; i < V.size(); i++) {
-		Info thisInfo = Infos[V[i] - 1];
-		cout << thisInfo.n << " ";
-		
-	}
-	cout << endl;
-}
-
-int copiedMap[60][60];
-
-/*void CopyMap() {
-	for (int i = 1; i <= R; i++) {
-		for (int j = 1; j <= C; j++) {
-			copiedMap[i][j] = map[i][j];
-		}
-	}
-}
-
-void RevertMap() {
-	for (int i = 1; i <= R; i++) {
-		for (int j = 1; j <= C; j++) {
-			map[i][j] = copiedMap[i][j];
-		}
-	}
-}*/
-
-int(*BackupMap(int(*map)[60]))[60]{
-	return map;
-}
+vector<int> V; // Infos를 수행할 순서
 
 void DFS(int cnt) {
-	cout << "cnt: " << cnt << endl;
+	
 	if (cnt >= K) {
-		// PrintPermutation();
-		int tmp = GetMin();
-		if (MIN > tmp) {
-			MIN = tmp;
+		
+		for (int i = 0; i < V.size(); i++) {
+			Info t = Infos[V[i]];
+			Turn(t.xStart, t.yStart, t.xEnd, t.yEnd, t.n);
+			// cout << V[i] << "번 연산" << endl;
+			// Print();
+
+			
 		}
+		int min = GetMin();
+		// cout << "min: " << min << endl;
+
+		if (MIN > min) MIN = min;
+
+		// 되돌리기
+		for (int i = 1; i <= R; i++) {
+			for (int j = 1; j <= C; j++) {
+				map[i][j] = backup[i][j];
+			}
+		}
+		// cout << "=========" << endl;
 
 		return;
 	}
 
-	for (int i = 1; i <= K; i++) {
+	for (int i = 0; i < K; i++) {
 		if (Select[i]) continue;
 
-		// CopyMap();
-		int(*origMap)[60] = BackupMap(map);
-		cout << "백업한 오리지널 맵: " << endl;
-		for (int i = 1; i <= C; i++) {
-			cout << origMap[i];
-			cout << endl;
-		}
-
 		Select[i] = true;
-		// V.push_back(i);
-		Info thisInfo = Infos[i-1];
-		Turn(thisInfo.xStart, thisInfo.yStart, thisInfo.xEnd, thisInfo.yEnd, thisInfo.n);
-		cout << cnt+1 << "번째 숫자로 " << i << "선택" << endl;
-		cout << "연산: " << thisInfo.xStart + thisInfo.n << " " << thisInfo.yStart + thisInfo.n << endl;
-		Print();
-		cout << endl;
+		V.push_back(i);
 
 		DFS(cnt + 1);
 
-		// RevertMap();
-		for (int i = 1; i <= R; i++) {
-			for (int j = 1; j <= C; j++) {
-				map[i][j] = origMap[i][j];
-			}
-		}
-		// V.pop_back();
-
+		V.pop_back();
 		Select[i] = false;
 	}
 }
