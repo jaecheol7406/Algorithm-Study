@@ -38,19 +38,78 @@ void Print() {
 		cout << endl;
 	}
 }
+int verification[15] = { 0, };
+
+void Check(int n) {
+	// cout << "n: " << n << " 개수: " << num[n][0] <<  endl;
+	for (int i = 1; i <= num[n][0]; i++) {
+		
+		// 이미 선정된 구역은 pass
+		if (verification[num[n][i]] != 0) continue;
+
+
+		// cout << " 이번 체크구역:" << num[n][i] << " " << team[num[n][i]] << "==" << team[n] << endl;
+		if (team[num[n][i]] == team[n]) {
+			verification[num[n][i]] = team[n];
+			Check(num[n][i]);
+		}
+		
+	}
+}
 
 int min = 1000;
 void DFS(int n, int t) {
 	if (n > N) {
+		
 		/*for (int i = 1; i <= N; i++) {
 			cout << team[i] << " ";
 		}
 		cout << endl;*/
-		// 조건에 부합하는지 확인한다
-			// 1) 같은 구역끼리 연결되어 있다.
-				// A선거구 검증
 
-				// B선거구 검증
+		// 조건에 부합하는지 확인한다
+			// 0) 초기화
+		for (int i = 1; i <= N; i++) {
+			verification[i] = 0;
+		}
+		
+			// 1) 같은 구역끼리 연결되어 있다.
+		
+		verification[1] = team[1];
+		Check(1);
+
+		/*for (int i = 2; i <= N; i++) {
+			if (team[i] != team[1])
+				verification[i] = team[i];
+		}*/
+
+		
+
+		for (int i = 2; i <= N; i++) {
+			// cout << "*" << i;
+			if (verification[i] == 0 && team[i] != team[1]) {
+				// cout << i << "를 다른 팀으로 정해줌" << endl;
+				team[1] == 1 ? verification[i] = 2 : verification[i] = 1;
+				Check(i);
+				break;
+			}
+		}
+		//cout << endl;
+
+		/*for (int i = 1; i <= N; i++) {
+			cout << team[i] << " ";
+		}
+		cout << endl;
+		for (int i = 1; i <= N; i++) {
+			cout << verification[i] << " ";
+		}
+		cout << endl;
+		cout << "===================" << endl;*/
+
+		// 연결 안 되면 버린다
+		for (int i = 1; i <= N; i++) {
+			
+			if (team[i] != verification[i]) return;
+		}
 
 			// 2) 하나가 아니라 두 개 선거구이다.
 		int scoreA = 0;
