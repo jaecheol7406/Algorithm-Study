@@ -28,8 +28,8 @@ void Input() {
 	int r, c, dir;
 	for (int i = 1; i <= K; i++) {
 		scanf("%d %d %d", &r, &c, &dir);
-		chessInfo.push_back(Chess{ r-1, c-1, dir-1 });
-		map[r-1][c-1].push_back(i);
+		chessInfo.push_back(Chess{ r - 1, c - 1, dir - 1 });
+		map[r - 1][c - 1].push_back(i);
 	}
 }
 
@@ -69,13 +69,13 @@ void MoveWhite(int num) {
 			targetNum = i;
 			break;
 		}
-			
+
 	}
-	 // cout << num << "은 몇 번째부터 시작? " << targetNum << endl;
-	
-	// 새로운 위치로 이동을 시킨다
+	// cout << num << "은 몇 번째부터 시작? " << targetNum << endl;
+
+   // 새로운 위치로 이동을 시킨다
 	for (int i = targetNum; i < map[thisChess.r][thisChess.c].size(); i++) {
-		map[newR][newC].push_back(map[thisChess.r][thisChess.c][i]);		
+		map[newR][newC].push_back(map[thisChess.r][thisChess.c][i]);
 	}
 
 	// 기존 정보 갱신
@@ -83,7 +83,7 @@ void MoveWhite(int num) {
 		chessInfo[map[thisChess.r][thisChess.c][i]].r = newR;
 		chessInfo[map[thisChess.r][thisChess.c][i]].c = newC;
 	}
-	
+
 	// 이전 위치에서 빼낸다
 	int tmpRem = map[thisChess.r][thisChess.c].size();
 	for (int i = targetNum; i < tmpRem; i++) {
@@ -97,9 +97,9 @@ void MoveRed(int num) {
 			targetNum = i;
 			break;
 		}
-			
+
 	}
-	
+
 	// 새로운 위치로 이동을 시킨다
 	for (int i = map[thisChess.r][thisChess.c].size() - 1; i >= targetNum; i--) {
 		map[newR][newC].push_back(map[thisChess.r][thisChess.c][i]);
@@ -110,7 +110,7 @@ void MoveRed(int num) {
 		chessInfo[map[thisChess.r][thisChess.c][i]].r = newR;
 		chessInfo[map[thisChess.r][thisChess.c][i]].c = newC;
 	}
-	
+
 	// 이전 위치에서 빼낸다
 	int tmpRem = map[thisChess.r][thisChess.c].size();
 	for (int i = targetNum; i < tmpRem; i++) {
@@ -123,8 +123,10 @@ void MoveBlue(int num) {
 	chessInfo[num].dir = dirChange[thisChess.dir];
 	// cout << chessInfo[num].dir << "로 바뀜" << endl;
 
-	newR = thisChess.r + dir[chessInfo[num].dir][0];
-	newC = thisChess.c + dir[chessInfo[num].dir][1];
+	thisChess = chessInfo[num];
+
+	newR = thisChess.r + dir[thisChess.dir][0];
+	newC = thisChess.c + dir[thisChess.dir][1];
 	// cout << "=> 새로운 위치: " << newR << newC << "(" << bg[newR][newC] << ")" << endl;
 
 	if (newR < 0 || N <= newR || newC < 0 || N <= newC) {
@@ -145,7 +147,7 @@ void MoveBlue(int num) {
 
 bool Move(int num) {
 	// 움직인다
-	
+
 	thisChess = chessInfo[num];
 	// cout << num << "번 말 움직임. " << endl;
 
@@ -166,11 +168,11 @@ bool Move(int num) {
 		MoveBlue(num);
 	}
 
-  	// PrintNum();
-	
+	// PrintNum();
+
 
 	// 움직인 곳에 4개 이상 쌓여 있으면 
-	if(map[newR][newC].size() >= 4)
+	if (map[newR][newC].size() >= 4)
 		return true;
 	else
 		return false;
@@ -181,7 +183,7 @@ bool Go() {
 		if (Move(i)) { // 종료조건
 			return true;
 		}
-		
+
 	}
 	return false;
 }
@@ -191,7 +193,7 @@ int main() {
 
 	Input();
 	// PrintNum();
-	
+
 	for (int t = 1; t <= 1000; t++) {
 		if (Go()) { // 종료조건
 			cout << t;
