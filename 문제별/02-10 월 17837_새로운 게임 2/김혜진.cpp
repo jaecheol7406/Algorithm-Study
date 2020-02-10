@@ -1,14 +1,5 @@
 /*
-4 4
-0 0 2 0
-0 0 1 0
-0 0 1 2
-0 2 0 0
-2 1 1
-3 2 3
-2 2 1
-4 1 2
-답: -1
+테스트케이스 pass, 틀렸습니다
 */
 #include <iostream>
 #include <vector>
@@ -134,10 +125,13 @@ void MoveBlue(int num) {
 
 	newR = thisChess.r + dir[chessInfo[num].dir][0];
 	newC = thisChess.c + dir[chessInfo[num].dir][1];
-	// cout << "=> 새로운 위치: " << newR << newC << endl;
+	// cout << "=> 새로운 위치: " << newR << newC << "(" << bg[newR][newC] << ")" << endl;
 
+	if (newR < 0 || N <= newR || newC < 0 || N <= newC) {
+		// 아무것도 하지 않는다 ?
+	}
 	// 방향을 바꾸고 다시 시도
-	if (bg[newR][newC] == 0) { // 흰색
+	else if (bg[newR][newC] == 0) { // 흰색
 		MoveWhite(num);
 	}
 	else if (bg[newR][newC] == 1) { // 빨간색
@@ -153,11 +147,11 @@ bool Move(int num) {
 	// 움직인다
 	
 	thisChess = chessInfo[num];
-	// cout << num << "번 말 움직임. 현재 위치: " << thisChess.r << thisChess.c << endl;
+	// cout << num << "번 말 움직임. " << endl;
 
 	newR = thisChess.r + dir[thisChess.dir][0];
 	newC = thisChess.c + dir[thisChess.dir][1];
-	// cout << "새로운 위치 " << newR << " " << newC << "의 색은 " << bg[newR][newC] << endl;
+	// cout << "색은 " << bg[newR][newC] << endl;
 
 	if (newR < 0 || N <= newR || newC < 0 || N <= newC) {
 		MoveBlue(num);
@@ -172,7 +166,7 @@ bool Move(int num) {
 		MoveBlue(num);
 	}
 
-//  	PrintNum();
+  	// PrintNum();
 	
 
 	// 움직인 곳에 4개 이상 쌓여 있으면 
