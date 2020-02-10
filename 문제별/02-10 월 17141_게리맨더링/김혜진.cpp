@@ -13,7 +13,7 @@ void Input() {
 	for (int i = 1; i <= N; i++) {
 		scanf("%d ", &population[i]);
 	}
-	
+
 	for (int n = 0; n < N; n++) {
 		for (int i = 1; i <= N; i++) {
 			scanf("%d ", &num[i][0]);
@@ -43,7 +43,7 @@ int verification[15] = { 0, };
 void Check(int n) {
 	// cout << "n: " << n << " 개수: " << num[n][0] <<  endl;
 	for (int i = 1; i <= num[n][0]; i++) {
-		
+
 		// 이미 선정된 구역은 pass
 		if (verification[num[n][i]] != 0) continue;
 
@@ -53,14 +53,14 @@ void Check(int n) {
 			verification[num[n][i]] = team[n];
 			Check(num[n][i]);
 		}
-		
+
 	}
 }
 
-int min = 1000;
+int MIN = 1000;
 void DFS(int n, int t) {
 	if (n > N) {
-		
+
 		/*for (int i = 1; i <= N; i++) {
 			cout << team[i] << " ";
 		}
@@ -71,9 +71,9 @@ void DFS(int n, int t) {
 		for (int i = 1; i <= N; i++) {
 			verification[i] = 0;
 		}
-		
-			// 1) 같은 구역끼리 연결되어 있다.
-		
+
+		// 1) 같은 구역끼리 연결되어 있다.
+
 		verification[1] = team[1];
 		Check(1);
 
@@ -82,7 +82,7 @@ void DFS(int n, int t) {
 				verification[i] = team[i];
 		}*/
 
-		
+
 
 		for (int i = 2; i <= N; i++) {
 			// cout << "*" << i;
@@ -107,11 +107,11 @@ void DFS(int n, int t) {
 
 		// 연결 안 되면 버린다
 		for (int i = 1; i <= N; i++) {
-			
+
 			if (team[i] != verification[i]) return;
 		}
 
-			// 2) 하나가 아니라 두 개 선거구이다.
+		// 2) 하나가 아니라 두 개 선거구이다.
 		int scoreA = 0;
 		int scoreB = 0;
 		for (int i = 1; i <= N; i++) {
@@ -125,13 +125,13 @@ void DFS(int n, int t) {
 
 		if (scoreA == 0 || scoreB == 0) return;
 
-		// 각 팀 인구수 차이 구해 min과 비교한다
+		// 각 팀 인구수 차이 구해 MIN과 비교한다
 		/*for (int i = 1; i <= N; i++) {
 			cout << team[i] << " ";
 		}
 		cout << endl;*/
-		if (min > abs(scoreA - scoreB)) {
-			min = abs(scoreA - scoreB);
+		if (MIN > abs(scoreA - scoreB)) {
+			MIN = abs(scoreA - scoreB);
 		}
 		return;
 	}
@@ -153,13 +153,13 @@ int main() {
 	DFS(1, 1);
 	DFS(1, 2);
 
-	if (min == 1000) {
+	if (MIN == 1000) {
 		cout << "-1";
 	}
 	else {
-		cout << min;
+		cout << MIN;
 	}
-	
+
 
 	return 0;
 }
