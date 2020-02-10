@@ -150,6 +150,7 @@ public class Main2 {
 		}
 	}
 	
+	// 방향 변경
 	static void changeDir(Node node) {
 		if(node.dir == 1 || node.dir == 3)
 			node.dir++;
@@ -157,6 +158,7 @@ public class Main2 {
 			node.dir--;
 	}
 	
+	// 범위 확인
 	static boolean inScope(int x, int y) {
 		if(1 <= x && x <= N && 1 <= y && y <= N)
 			return true;
@@ -164,6 +166,7 @@ public class Main2 {
 	}
 }
 
+// 말
 class Node {
 	int nodeNum;
 	int x;
