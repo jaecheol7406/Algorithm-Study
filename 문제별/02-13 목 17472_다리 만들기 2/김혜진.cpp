@@ -1,3 +1,14 @@
+/*
+ 7 8
+1 0 0 1 1 1 0 0
+0 0 1 0 0 0 1 1
+0 0 1 0 0 0 1 1
+0 0 1 1 1 0 0 0
+0 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0
+1 1 1 1 1 1 0 0
+답: 9
+*/
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -14,7 +25,7 @@ int visited[15][15];
 vector<Pos> ones;
 vector<Pos> IslandStartPos; // [1]번은 1번 섬의 시작점(가장 왼쪽 위)
 
-int distance[10][10]; // [a]번 섬에서 [b]번 섬으로 건너가는 최소의 수
+int Distance[10][10]; // [a]번 섬에서 [b]번 섬으로 건너가는 최소의 수
 
 void Input() {
 	scanf("%d %d\n", &R, &C);
@@ -61,30 +72,113 @@ void DFS(int thisR, int thisC) {
 	}
 }
 
-int PickMin(int dep, int des) { // 출발지, 도착지
-	// 가로 탐색
+void PickMin(int a, int b) { // dep 섬에서 dest 섬을 가는 최소 거리
+	int tmpMin = 100;
+	int dep, dest;
 
-	// 세로 탐색
+	// 가로길: 행이 같을 때, 열거리의 최소값
+		// 더 왼쪽에 있는 구역을 결정
+	if (IslandStartPos[a].c > IslandStartPos[b].c) {
+		dep = b;
+		dest = a;
+	}
+	else {
+		dep = a;
+		dest = b;
+	}
+	// cout << "출발:" << dep << " 도착:" << dest << endl;
 
-	return 0;
+	// dep구역의 모든 행에 대하여
+	for (int r = IslandStartPos[dep].r; island[r][IslandStartPos[dep].c] == dep; r++) {
+		// cout << r << "행 ";
+		int tmpCnt = 0;
+
+		int startC = IslandStartPos[dep].c + 1;
+		while (1) {
+			// cout << startC << "열:" << island[r][startC] << " ";
+			if (island[r][startC] != dep) tmpCnt++;
+			if (startC >= C) break;
+			if (island[r][startC] == dest) {
+				// cout << " 거리: " << tmpCnt-1;
+				if (tmpMin > tmpCnt-1) tmpMin = tmpCnt-1;
+				break;
+			}
+
+			startC++;
+		}
+		// cout << endl;
+	}
+
+	// 세로길
+		// 더 위쪽에 있는 구역을 결정
+	if (IslandStartPos[a].r > IslandStartPos[b].r) {
+		dep = b;
+		dest = a;
+	}
+	else {
+		dep = a;
+		dest = b;
+	}
+	// cout << "출발:" << dep << " 도착:" << dest << endl;
+
+	// dep구역의 모든 열에 대하여
+	for (int c = IslandStartPos[dep].c; island[IslandStartPos[dep].r][c] == dep; c++) {
+		// cout << c << "열 ";
+		int tmpCnt = 0;
+
+		int startR = IslandStartPos[dep].r + 1;
+		while (1) {
+			// cout << startC << "열:" << island[r][startC] << " ";
+			if (island[startR][c] != dep) tmpCnt++;
+			if (startR >= R) break;
+			if (island[startR][c] == dest) {
+				// cout << " 거리: " << tmpCnt - 1;
+				if (tmpMin > tmpCnt - 1) tmpMin = tmpCnt - 1;
+				break;
+			}
+
+			startR++;
+		}
+		// cout << endl;
+	}
+
+	Distance[a][b] = tmpMin;
+	Distance[b][a] = tmpMin;
+	
 }
 
+int MIN = 100;
 vector<int> V;
 int Selected[10];
 void Pick(int cnt) {
 	if (cnt >= isCnt - 1) { // 종료 조건
+		int sum = 0;
 		cout << "순서: ";
 		for (int i = 1; i < V.size(); i++) {
-			cout << V[i-1] << "->" << V[i] << " ";
+			cout << V[i - 1] << "->" << V[i] << " ";
+			if (Distance[V[i - 1]][V[i]] == 0) { 
+				PickMin(V[i - 1], V[i]);
+			}
+			cout << "(" << Distance[V[i - 1]][V[i]] << ") ";
+			if (Distance[V[i - 1]][V[i]] == 100 || Distance[V[i - 1]][V[i]] < 2) { // 못 간다
+				return;
+			}
+			else {
+				sum += Distance[V[i - 1]][V[i]];
+			}
+			
 		}
 		cout << endl;
+		cout << "sum: " << sum << endl;
+		if (sum != 0 && sum < MIN) MIN = sum;
+		return;
 	}
 
 	for (int i = 1; i < isCnt; i++) {
 		if (Selected[i] == 0) {
 			Selected[i] = 1;
 			V.push_back(i);
-			
+
 			Pick(cnt + 1);
 
 			V.pop_back();
@@ -122,7 +216,16 @@ int main() {
 
 	// 섬 id로 순열 뽑기
 	Pick(0);
+
+	cout << endl;
+	if (MIN == 100) {
+		cout << "-1";
+	}
+	else {
+		cout << MIN;
+	}
 	
 
+
 	return 0;
- }
+}
