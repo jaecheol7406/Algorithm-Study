@@ -1,6 +1,3 @@
-/*
-테스트케이스 pass, 틀렸습니다
-*/
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -122,15 +119,15 @@ void MoveBlue(int num) {
 	// cout << "blue! 방향이 " << chessInfo[num].dir << "에서 ";
 	chessInfo[num].dir = dirChange[thisChess.dir];
 	// cout << chessInfo[num].dir << "로 바뀜" << endl;
-
 	thisChess = chessInfo[num];
+
 
 	newR = thisChess.r + dir[thisChess.dir][0];
 	newC = thisChess.c + dir[thisChess.dir][1];
 	// cout << "=> 새로운 위치: " << newR << newC << "(" << bg[newR][newC] << ")" << endl;
 
 	if (newR < 0 || N <= newR || newC < 0 || N <= newC) {
-		// 아무것도 하지 않는다 ?
+		MoveBlue(num);
 	}
 	// 방향을 바꾸고 다시 시도
 	else if (bg[newR][newC] == 0) { // 흰색
