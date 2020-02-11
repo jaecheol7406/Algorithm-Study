@@ -1,4 +1,4 @@
-// 17428 KB KB, 160 ms, 2681 B
+//17168 KB, 164 ms, 2264 B
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -40,6 +40,7 @@ public class Main {
 			for(Integer sh : subHorses)	chessMap[h.i][h.j].remove(sh);
 			
 			int ni = h.i + compass[h.dir][0], nj = h.j + compass[h.dir][1];
+			int colorN;
 			if(ni<0 || ni>=N || nj<0 || nj>=N || colorMap[ni][nj] ==2) 
 			{
 				h.dir = (h.dir%2 ==0) ? h.dir-1  : h.dir+1;
@@ -49,35 +50,18 @@ public class Main {
 					chessMap[h.i][h.j].addAll(subHorses);
 					continue;
 				}
-				if(colorMap[mi][mj] == 1) Collections.reverse(subHorses);
-				chessMap[mi][mj].addAll(subHorses);
-				for(Integer sh : subHorses) {
-					horses[sh].i = mi;
-					horses[sh].j = mj;
-				}
-				if(chessMap[mi][mj].size() >= 4) return true;
-				continue;
-			}
+				ni=mi; nj=mj; colorN = colorMap[mi][mj];//흰색 빨강경우로 계산하도록 바꾸기
+			}else
+				colorN = colorMap[ni][nj];
 			
-			switch(colorMap[ni][nj]) {
-			case 0://흰색
-				chessMap[ni][nj].addAll(subHorses);
-				for(Integer sh : subHorses) {
-					horses[sh].i = ni;
-					horses[sh].j = nj;
-				}
-				if(chessMap[ni][nj].size() >= 4) return true;
-				break;
-			case 1: //빨강
-				Collections.reverse(subHorses);
-				chessMap[ni][nj].addAll(subHorses);
-				for(Integer sh : subHorses) {
-					horses[sh].i = ni;
-					horses[sh].j = nj;
-				}
-				if(chessMap[ni][nj].size() >= 4) return true;
-				break;
+			if (colorN == 1) Collections.reverse(subHorses);//빨강
+			chessMap[ni][nj].addAll(subHorses);//흰색, 빨랑 
+			for (Integer sh : subHorses) {
+				horses[sh].i = ni;
+				horses[sh].j = nj;
 			}
+			if (chessMap[ni][nj].size() >= 4)
+				return true;
 		}
 		return false;
 	}
