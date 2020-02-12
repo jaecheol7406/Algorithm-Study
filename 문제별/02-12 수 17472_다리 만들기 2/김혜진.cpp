@@ -1,24 +1,4 @@
-/*
-다리를 세우지 못하는 경우에 2짜리를 세워버리는 문제
-7 7
-1 1 1 0 1 1 1
-1 1 1 0 1 1 1
-1 1 1 0 1 1 1
-0 0 0 0 0 0 0
-1 1 1 0 1 1 1
-1 1 1 0 1 1 1
-1 1 1 0 1 1 1
-답: -1
-7 8
-0 0 0 0 0 0 1 1
-1 1 0 0 0 0 1 1
-1 1 0 0 0 0 0 0
-1 1 0 0 0 1 1 0
-0 0 0 0 0 1 1 0
-0 0 0 0 0 0 0 0
-1 1 1 1 1 1 1 1
-답: 9
-*/
+// 테케 pass, 틀렸습니다
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -90,8 +70,24 @@ struct Cands {
 };
 vector<Cands> cands;
 
+bool CheckRow(int num, int c) {
+	for (int i = 0; i < R; i++) {
+		if (island[i][c] == num)
+			return true;
+	}
+	return false;
+}
+
+bool CheckCol(int num, int r) {
+	for (int i = 0; i < C; i++) {
+		if (island[r][i] == num)
+			return true;
+	}
+	return false;
+}
+
 void PickMin(int a, int b) { // dep 섬에서 dest 섬을 가는 최소 거리
-	int tmpMin = 100;
+	int tmpMin = 100; // 그대로 100이면 '못 간다'는 뜻
 	int dep, dest;
 
 	// 가로길: 행이 같을 때, 열거리의 최소값
@@ -104,29 +100,40 @@ void PickMin(int a, int b) { // dep 섬에서 dest 섬을 가는 최소 거리
 		dep = a;
 		dest = b;
 	}
-	cout << "출발:" << dep << " 도착:" << dest << endl;
-
-	// dep구역의 모든 행에 대하여
-	for (int r = IslandStartPos[dep].r; island[r][IslandStartPos[dep].c] == dep; r++) {
-		// cout << r << "행 ";
+	// cout << "==================출발:" << dep << " 도착:" << dest << "===============" << endl;
+	
+	// cout << dep << "구역의 모든 행에 대해서====" << endl;
+	for (int r = IslandStartPos[dep].r; CheckCol(dep, r); r++) {
+		// cout << r << "행 " << endl;
 		int tmpCnt = 0;
 
 		int startC = IslandStartPos[dep].c + 1;
+		
 		while (1) {
-			cout << startC << "열:" << island[r][startC] << " ";
+			
 			if (island[r][startC] != dep) tmpCnt++;
-			if (startC >= C) break;
+			if (startC >= C) {
+				startC++;
+				break;
+			}
+			if (island[r][startC] != dep && island[r][startC] != dest && island[r][startC] != 0) { // 중간에 다른 섬이 걸치면 안됨(추가)
+				startC++;
+				break;
+			}
 			if (island[r][startC] == dest) {
-				cout << " 거리: " << tmpCnt-1;
-				if (tmpMin > tmpCnt - 1 && tmpCnt - 1 != 1) { // 문제(예상)
+				if (tmpCnt - 1 == 1) {
+					startC++; // 추가
+					break;
+				}
+				if (tmpMin > tmpCnt - 1) {
 					tmpMin = tmpCnt - 1;
+					// cout << dest << "섬까지 " << tmpCnt -1 << endl;
 					break;
 				}
 			}
 
 			startC++;
 		}
-		cout << endl;
 	}
 
 	// 세로길
@@ -139,30 +146,37 @@ void PickMin(int a, int b) { // dep 섬에서 dest 섬을 가는 최소 거리
 		dep = a;
 		dest = b;
 	}
-	// cout << "출발:" << dep << " 도착:" << dest << endl;
 
-	// dep구역의 모든 열에 대하여
-	for (int c = IslandStartPos[dep].c; island[IslandStartPos[dep].r][c] == dep; c++) {
-		// cout << c << "열 ";
+	// cout << dep << "구역의 모든 열에 대해서====" << endl;
+	for (int c = IslandStartPos[dep].c; CheckRow(dep, c); c++) {
+		// cout << c << "열 " << endl;
 		int tmpCnt = 0;
 
 		int startR = IslandStartPos[dep].r + 1;
 		while (1) {
-			cout << startR << "행:" << island[startR][c] << " ";
 			if (island[startR][c] != dep) tmpCnt++;
-			if (startR >= R) break;
+			if (startR >= R) {
+				startR++;
+				break;
+			}
+			if (island[startR][c] != dep && island[startR][c] != dest && island[startR][c] != 0) { // 중간에 다른 섬이 걸치면 안됨(추가)
+				startR++;
+				break;
+			}
 			if (island[startR][c] == dest) {
-				cout << " 거리: " << tmpCnt - 1;
-				if (tmpMin > tmpCnt - 1 && tmpCnt - 1 != 1) {  // 문제(예상)
+				if (tmpCnt - 1 == 1) {
+					startR++; // 추가
+					break;
+				}
+				if (tmpMin > tmpCnt - 1 ) {
 					tmpMin = tmpCnt - 1;
+					// cout << dest << "섬까지 " << tmpCnt - 1 << endl;
 					break;
 				}
 			}
-			cout << endl;
 
 			startR++;
 		}
-		// cout << endl;
 	}
 
 	Distance[a][b] = tmpMin;
@@ -216,7 +230,7 @@ int main() {
 	}
 
 	Print(); // 섬 id 프린트
-	PrintStart(); // 각 섬의 시작점 프린트
+	// PrintStart(); // 각 섬의 시작점 프린트
 
 	for (int i = 1; i < isCnt; i++) {
 		for (int j = i + 1; j < isCnt; j++) {
@@ -226,31 +240,33 @@ int main() {
 		}
 	}
 
-	for (int i = 0; i < 10; i++) {
+	/*for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
 			cout << Distance[i][j] << " ";
 		}
 		cout << endl;
-	}
+	}*/
 
 	sort(cands.begin(), cands.end(), cmp);
 
 	for (int i = 0; i < cands.size(); i++) {
 		cout << "다리 길이 " << cands[i].len << " " << cands[i].r << "~" << cands[i].c << endl;
 	}
-	
+
 	int answer = 0;
 	for (int i = 0; i < cands.size(); i++) {
-		cout << "i: " << i << endl;
+		// cout << "i: " << i << endl;
 		if (CheckVisited()) { // 모두 방문
 			break;
 		}
+		if (cands[i].len == 100) break;
 		answer += cands[i].len;
 		visitedIsland[cands[i].r] = 1;
 		visitedIsland[cands[i].c] = 1;
 	}
 
-	cout << "답: " << answer;
+	if (answer == 0) cout << "-1";
+	else cout << answer;
 
 
 
