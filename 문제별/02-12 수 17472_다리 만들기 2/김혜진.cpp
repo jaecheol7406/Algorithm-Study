@@ -1,4 +1,30 @@
-// 테케 pass, 틀렸습니다
+/*
+10 5
+0 1 0 0 0
+1 1 1 0 0
+1 0 1 1 1
+0 1 1 1 0
+1 0 0 0 1
+1 1 1 0 1
+0 0 0 0 1
+0 0 0 1 0
+0 0 0 1 1
+0 0 0 0 0
+답: -1
+
+10 6
+0 0 0 1 0 0
+0 0 0 1 0 0
+0 1 0 0 0 1
+0 0 0 0 0 0
+1 1 0 1 1 0
+1 0 0 0 1 0
+1 1 0 0 1 0
+0 0 0 0 1 1
+0 0 0 0 0 0
+0 1 0 0 0 0
+답: 13
+*/
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -207,7 +233,7 @@ bool cmp(Cands a, Cands b) {
 int visitedIsland[10];
 bool CheckVisited() {
 	for (int i = 1; i < isCnt; i++) {
-		if (visitedIsland[i] == 0)
+		if (visitedIsland[i] != 1)
 			return false;
 	}
 	return true;
@@ -253,17 +279,57 @@ int main() {
 		cout << "다리 길이 " << cands[i].len << " " << cands[i].r << "~" << cands[i].c << endl;
 	}
 
+	int tmpArea = 2;
+
 	int answer = 0;
+	visitedIsland[cands[0].r] = 1;
 	for (int i = 0; i < cands.size(); i++) {
 		// cout << "i: " << i << endl;
 		if (CheckVisited()) { // 모두 방문
 			break;
 		}
-		if (cands[i].len == 100) break;
+		if (cands[i].len == 100) {
+			answer = 0;
+			break;
+		}
+
+		if (visitedIsland[cands[i].r] == 1 && visitedIsland[cands[i].c] == 1) continue;
 		answer += cands[i].len;
-		visitedIsland[cands[i].r] = 1;
-		visitedIsland[cands[i].c] = 1;
+
+		// 집계하되, 서로 연결된 섬을 표시한다.
+		if (visitedIsland[cands[i].r] == 1 && visitedIsland[cands[i].c] != 1) {
+			if (visitedIsland[cands[i].c] != 0) {
+				for(int t=1; t<isCnt; t++) {
+					if (visitedIsland[t] == visitedIsland[cands[i].c])
+						visitedIsland[t] = 1;
+				}
+			}
+			visitedIsland[cands[i].c] = 1;
+		}
+		else if (visitedIsland[cands[i].c] == 1 && visitedIsland[cands[i].r] != 1) {
+			if (visitedIsland[cands[i].r] != 0) {
+				for (int t = 1; t < isCnt; t++) {
+					if (visitedIsland[t] == visitedIsland[cands[i].r])
+						visitedIsland[t] = 1;
+				}
+			}
+			visitedIsland[cands[i].r] = 1;
+		}
+		else if (visitedIsland[cands[i].c] != 0) {
+			visitedIsland[cands[i].r] = visitedIsland[cands[i].c];
+		}
+		else { // 둘 다 처음임
+			visitedIsland[cands[i].r] = tmpArea;
+			visitedIsland[cands[i].c] = tmpArea;
+			tmpArea++;
+		}
 	}
+
+	cout << "visit 현황" << endl;
+	for (int i = 1; i < isCnt; i++) {
+		cout << visitedIsland[i] << " ";
+	}
+	cout << endl;
 
 	if (answer == 0) cout << "-1";
 	else cout << answer;
