@@ -42,7 +42,7 @@ public class Main {
 		findIsland();
 		findRelation();
 		calcResultMin();
-		printRelation();
+		// printRelation();
 
 		if(resultMin == Integer.MAX_VALUE)
 			resultMin = -1;
