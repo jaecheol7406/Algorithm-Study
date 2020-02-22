@@ -1,18 +1,4 @@
-/*
-9
-0 0 0 1 0 0 0 0 0
-0 1 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 8
-7 0 0 0 0 1 0 0 0
-0 0 0 0 0 1 1 0 0
-0 0 0 0 0 0 0 0 0
-1 0 0 0 0 1 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-답: 18
-*/
 #include <iostream>
-
 #include <vector>
 #include <string.h>
 #include <stdlib.h>
@@ -94,17 +80,7 @@ void Print() {
 }
 
 void Go() {
-	/*cout << "케이스 시작 ==============" << endl;
-	cout << "dist1 남은거리: ";
-	for (int i = 0; i < dist1.size(); i++) {
-		cout << dist1[i] << " ";
-	}
-	cout << endl;
-	cout << "dist2 남은거리: ";
-	for (int i = 0; i < dist2.size(); i++) {
-		cout << dist2[i] << " ";
-	}
-	cout << endl;*/
+	
 
 	while (t > -1) {
 		t++; // 1초 경과
@@ -154,9 +130,18 @@ void Go() {
 		// cout << "   계단1로 향하기 ==" << endl;
 		for (int i = 0; i < dist1.size(); i++) {
 			if (dist1[i] == 1) { // 계단 입구에 도착하면
+				// cout << "계단 진입" << endl;
 				if (str1.size() < 3) { // 계단에 진입할 수 있으면
 					str1.push_back(str[0].len);
-					// cout << "계단 진입" << endl;
+					dist1[i] = -1;
+				}
+				else {
+					dist1[i]--;
+				}
+			}
+			else if (dist1[i] == 0) { // 예전에 도착했는데 진입을 못하던 애
+				if (str1.size() < 3) {
+					str1.push_back(str[0].len - 1);
 					dist1[i]--;
 				}
 			}
@@ -168,9 +153,18 @@ void Go() {
 		// cout << "   계단2로 향하기 ==" << endl;
 		for (int i = 0; i < dist2.size(); i++) {
 			if (dist2[i] == 1) { // 계단 입구에 도착하면
+				// cout << "계단 진입" << endl;
 				if (str2.size() < 3) { // 계단에 진입할 수 있으면
 					str2.push_back(str[1].len);
-					// cout << "계단 진입" << endl;
+					dist2[i] = -1;
+				}
+				else {
+					dist2[i]--;
+				}
+			}
+			else if (dist2[i] == 0) {
+				if (str2.size() < 3) {
+					str2.push_back(str[1].len - 1);
 					dist2[i]--;
 				}
 			}
@@ -200,7 +194,6 @@ void Select(int cnt) {
 		finish = 0;
 
 		for (int i = 0; i < ppl.size(); i++) { // 계단과 그 사람 간의 남은 거리 계산
-// 			cout << selected[i];
 			if (selected[i] == 1) {
 				int distance = abs(ppl[i].r - str[0].r) + abs(ppl[i].c - str[0].c);
 				dist1.push_back(distance);
@@ -210,6 +203,23 @@ void Select(int cnt) {
 				dist2.push_back(distance);
 			}
 		}
+		/*cout << "뽑힌 경우: ";
+		for (int i = 0; i < ppl.size(); i++) {
+			cout << selected[i] << " ";
+		}
+		cout << endl;
+
+		cout << "케이스 시작 ==============" << endl;
+		cout << "dist1 남은거리: ";
+		for (int i = 0; i < dist1.size(); i++) {
+			cout << dist1[i] << " ";
+		}
+		cout << endl;
+		cout << "dist2 남은거리: ";
+		for (int i = 0; i < dist2.size(); i++) {
+			cout << dist2[i] << " ";
+		}
+		cout << endl;*/
 		
 		Go();
 
