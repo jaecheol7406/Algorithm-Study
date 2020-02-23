@@ -98,15 +98,21 @@ int main() {
 
 		int answer;
 		int rank = 1;
-		for (int i = 1; i < cands.size(); i++) {
-			
+
+		int i = 1;
+		while (rank != K) {
+			answer = cands[i - 1];
+			// cout << rank << "번째로 큰 수: " << answer << endl;
+
 			if (cands[i - 1] != cands[i]) {
-				answer = cands[i - 1];
-				// cout << rank << "번째로 큰 수: " << answer << endl;
+				// cout << cands[i - 1] << " != " << cands[i] << endl;
 				rank++;
 			}
-			if (rank == K+1) break;
+			
+			i++;
 		}
+		answer = cands[i - 1];
+		
 		cout << answer << endl;
 
 	}
