@@ -10,9 +10,9 @@ import java.util.Scanner;
  * 17140_이차원 배열과 연산
  * 
  * 1. R연산
- * 		(1) 각 행마다 행 개수만큼 HashMap 배열을 따로 만든다. HashMap에는 key : 숫자, value : 숫자의 개수 저장되어있음.
- * 		(2) 해쉬맵 중 가장 크기가 큰 size * 2 만큼 new int[] 해줌. 배열의 크기는 해쉬맵의 size * 2(key, value 2개) 만큼 나옴.
- * 		(3) 이후 각 행의 HashMap을 sort메소드로 value에 대해 오름차순, key에 대해 오름차순으로 정렬 후 key, value 값들을 각 행에 갱신
+ * 		(1) 각 행마다 행 개수만큼 HashMap 배열을 따로 만든다. HashMap에는 key : 숫자, value : 숫자의 개수 저장
+ * 		(2) 해쉬맵 중 가장 크기가 큰 size * 2 만큼 모든 행에 new int[] 해줌. 예를들어 {1 : 1}, {3 : 2}이면 2(size) * 2(k, v) = 4 크기 만큼 배열 생성
+ * 		(3) 이후 각 행의 HashMap을 sort메소드로 value에 대해 오름차순, key에 대해 오름차순으로 정렬 후 key, value 값들을 각 행에 갱신, 채워지지 않은 부분은 default로 0
  * 
  * 2. C연산
  * 		(1) 배열 왼쪽으로 회전
