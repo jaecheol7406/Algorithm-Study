@@ -1,8 +1,10 @@
 /*
-DFS, 시간초과
+BFS, 메모리초과
 */
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <string.h>
 
 using namespace std;
 
@@ -45,75 +47,80 @@ void Print() {
 
 }
 int MIN = 999999;
-
 int lastEv = 9999;
-vector<int> selected;
-int visited[110][100100];
 
 vector<int> sequence;
-void DFS(int cnt) {
-	if (cnt >= MIN) return;
-	/*cout << endl << "DFS" << cnt << endl;
-	cout << thisStair << "==" << End << endl;*/
 
-	if (thisStair == End) { // 종료 조건
-
-		/*cout << "===종료:" << cnt << " ";
-		for (int i = 0; i < selected.size(); i++) {
-			cout << selected[i]+1;
-		}
-		cout << endl;*/
-
-		if (MIN > cnt) {
-			MIN = cnt;
-			sequence.clear();
-			for (int i = 0; i < selected.size(); i++) {
-				sequence.push_back(selected[i]);
-			}
-		}
-		thisStair = Start;
-		return;
-	}
-
-
-	for (int i = 0; i < M; i++) {
-		if ((thisStair - xarr[i]) % yarr[i] != 0) continue;  // i번 엘리베이터를 탈 수 없는 경우
-		if (i == lastEv) continue;
-
-
-		// i번 엘리베이터를 탄다. 어디서 내릴 것인지 결정
-		lastEv = i;
-		// cout << i << "번 엘리베이터 타기" << endl;
-
-		for (int j = 0; xarr[i] + yarr[i] * j <= N; j++) {
-			if (xarr[i] + yarr[i] * j == thisStair) {
-				visited[i][j] = 1;
-				continue;
-			}
-
-			if (visited[i][j] == 0) {
-				visited[i][j] = 1;
-				selected.push_back(i);
-				thisStair = xarr[i] + yarr[i] * j;
-				// cout << thisStair << "에서 내리기" << endl;
-
-				DFS(cnt + 1);
-
-				visited[i][j] = 0;
-				selected.pop_back();
-			}
-		}
-
-		return;
-
-	}
-}
+struct Pos {
+	int cnt;
+	int pos;
+	vector<int> route;
+	int visited[110] = { 0, }; // 이미 탄 엘리베이터
+};
+queue<Pos> q;
+int lastStair;
 
 int main() {
 
 	Input();
 	// Print();
-	DFS(0);
+
+	Pos start;
+	start.cnt = 0; start.pos = Start;
+	q.push(start);
+	lastStair = Start;
+
+	while (!q.empty()) {
+		Pos thisPos = q.front();
+		q.pop();
+		// cout << thisPos.pos << "층, cnt: " << thisPos.cnt << "=========" << endl;
+
+		if (thisPos.pos == End) { // 종료 조건 (가장 먼저 끝나는 애가 최소)
+			MIN = thisPos.cnt;
+			for (int i = 0; i < thisPos.route.size(); i++) {
+				sequence.push_back(thisPos.route[i]);
+			}
+			break;
+		}
+
+		for (int i = 0; i < M; i++) {
+			// i번 엘리베이터를 탈 수 없는 경우
+			if ((thisPos.pos - xarr[i]) % yarr[i] != 0) continue; // 해당 층과 연결되어 있지 않다
+			if (thisPos.visited[i] == 1) continue; // 이미 사용한 엘리베이터이다
+			
+			
+			lastStair = thisPos.pos;
+			// cout << i << "번 엘리베이터 탈 수 있음" << endl;
+
+			// j: 그 엘리베이터를 타고 갈 수 있는 층들
+			for (int j = xarr[i]; j <= N; j += yarr[i]) { 
+				if (lastStair == j) continue; // 방금 전에 있던 층에 다시 가지 않는다
+
+				if (thisPos.visited[i] == 0) {
+					Pos newPos;
+
+					memcpy(newPos.visited, thisPos.visited, 110);
+					newPos.visited[i] = 1;
+
+					newPos.cnt = thisPos.cnt + 1;
+
+					for (int i = 0; i < thisPos.route.size(); i++) {
+						newPos.route.push_back(thisPos.route[i]);
+					}
+					newPos.route.push_back(i);
+
+					newPos.pos = j;
+					// cout << j << "층 가기" << endl;
+
+					q.push(newPos);
+				}
+				
+			}
+
+		}
+	}
+	
+	
 
 	if (MIN == 999999) {
 		cout << -1;
