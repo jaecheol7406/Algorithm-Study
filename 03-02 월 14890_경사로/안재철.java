@@ -12,7 +12,7 @@ import java.util.Scanner;
  * 이전값들보다 작은 값이 나오면서(before > now) L 크기만큼 경사로 놓고 진행, L크기만큼 못놓으면 return false;
  * 끝까지 가면 return true;
  */
-public class Main3 {
+public class Main {
 	static int N, L;
 	static int[][] map;
 	static int count;
