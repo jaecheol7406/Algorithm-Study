@@ -4,6 +4,8 @@
 */
 #include <iostream>
 #include <queue>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -17,13 +19,16 @@ int N;
 Pos shark; // 상어의 위치
 int eaten = 0; // 상어가 먹은 물고기 개수
 int sharkSize = 2; // 상어 크기
-int dist = 0;
+
+int stdDist = 0;
 
 int fish[25][25]; // 물고기의 위치 및 물고기 크기
 int visited[25][25];
 int distArr[25][25];
 
 int seconds;
+
+vector<Pos> cands;
 
 void Input() {
 	scanf("%d\n", &N);
@@ -49,6 +54,11 @@ void Print() {
 }
 queue<Pos> q;
 
+bool cpr(Pos a, Pos b) {
+	if (a.r == b.r) return a.c < b.c;
+	return a.r < b.r;
+}
+
 int dir[4][2] = { {-1, 0}, {0, -1}, {0, 1}, {1, 0} };
 Pos BFS() {
 	// Init
@@ -65,7 +75,7 @@ Pos BFS() {
 	while (!q.empty()) {
 		q.pop();
 	}
-	dist = 0;
+	stdDist = 0;
 
 	q.push(shark);
 	// visited[shark.r][shark.c] = 1;
@@ -82,6 +92,8 @@ Pos BFS() {
 		}
 		q.pop();
 
+		if (stdDist != 0 && distArr[thisR][thisC] >= stdDist) continue;
+
 		for (int i = 0; i < 4; i++) {
 			tmpR = thisR + dir[i][0];
 			tmpC = thisC + dir[i][1];
@@ -93,16 +105,36 @@ Pos BFS() {
 			
 			if (fish[tmpR][tmpC] > 0 && fish[tmpR][tmpC] < sharkSize) { // 먹을 수 있는 가장 가까운 물고기
 				distArr[tmpR][tmpC] = distArr[thisR][thisC] + 1;
-				return Pos{ tmpR, tmpC };
+				stdDist = distArr[tmpR][tmpC];
+				// cout << "!!" << endl;
+				cands.push_back(Pos{ tmpR, tmpC });
+				// return Pos{ tmpR, tmpC };
 			}
-			visited[tmpR][tmpC] = 1;
-			q.push(Pos{ tmpR, tmpC });
-			distArr[tmpR][tmpC] = distArr[thisR][thisC] + 1;
-			// cout << "distArr[tmpR][tmpC]= " << distArr[thisR][thisC] + 1 << endl;
+			else {
+				visited[tmpR][tmpC] = 1;
+				q.push(Pos{ tmpR, tmpC });
+				distArr[tmpR][tmpC] = distArr[thisR][thisC] + 1;
+				// cout << "distArr[tmpR][tmpC]= " << distArr[thisR][thisC] + 1 << endl;
+			}
+			
 			
 		}
 	}
-	return Pos{ -1, -1 };
+
+	// cout << "cands size: " << cands.size() << endl;
+	if (cands.size() > 0) {
+		/*for (int i = 0; i < cands.size(); i++) {
+			cout << cands[i].r << "," << cands[i].c << "(" << distArr[cands[i].r][cands[i].c] << ")" << endl;
+		}*/
+		sort(cands.begin(), cands.end(), cpr);
+
+		
+		return Pos{ cands[0].r, cands[0].c };
+	}
+	else {
+		return Pos{ -1, -1 };
+	}
+	
 }
 
 int main() {
@@ -121,6 +153,7 @@ int main() {
 
 		// cout << "****먹는다: " << nextPos.r << "," << nextPos.c << " 이동거리: " << distArr[nextPos.r][nextPos.c] << endl;
 		seconds += distArr[nextPos.r][nextPos.c];
+		cands.clear();
 
 		fish[nextPos.r][nextPos.c] = 0;
 		shark.r = nextPos.r;
