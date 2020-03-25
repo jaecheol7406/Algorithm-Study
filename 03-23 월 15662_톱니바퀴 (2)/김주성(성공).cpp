@@ -1,3 +1,11 @@
+// 실패
+// 펑션콜순서
+// copy() -> check() -> rotate() -> calcul() 순으로 함수가 콜된다.
+// 1. 이차원 벡터에 푸시하면서 인풋값을 넣는다.
+// 2. copy()함수로 인해 인풋값을 임시배열에 저장한다.
+// 3. check()함수로 인해방향과 인덱스값 v값을 넘겨받고 오른쪽과 왼쪽으로 구분하여 rotate함수를 이용해 돌린다.
+// 4. k만큼 다돌았으면 calcul()로 12시방향의 값을 ++해준다.
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <vector>
