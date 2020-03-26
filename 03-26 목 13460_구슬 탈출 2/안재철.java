@@ -7,7 +7,7 @@ import java.util.Queue;
  * solve() -> copyOf()
  * 
  * solve() 에서 네 방향 모두 기울이는 것에 대해 bfs 진행. 큐에 구슬좌표, 맵 상태, 기울인 횟수(count)를 함께 저장함. 
- * count가 10 넘어가거나 벽에 막히면 큐에 넣지 않고, 가장 먼저 빨간색 구슬에 구멍에 들어가면 count 출력 후 종료 
+ * count가 10 넘어가거나 벽에 막히면 큐에 넣지 않고, 처음 빨간색 구슬이 구멍에 들어갈 때 count 출력 후 종료 
  */
 public class Main {
 	static int[] dx = {0, 0, 1, -1};
