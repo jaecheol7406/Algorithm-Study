@@ -1,3 +1,8 @@
+/*
+1. 기울이는 코드 완성
+  function call: Input() -> Tilt(방향)
+2. 기울이는 방향 탐색 고민중
+*/
 #include <iostream>
 using namespace std;
 
