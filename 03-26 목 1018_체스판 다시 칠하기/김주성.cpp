@@ -1,3 +1,4 @@
+// 변수를 계속 바꾸어서 맞는지 확인했다. 주의해야할것은 줄이 바뀌면 맨 마지막 값이 처음값이 되어야 함으로 플래그로 확인해줌
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 int n, m;
