@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+//2중포문으로 tall값과 weight값 둘다 크다면 cnt를 증가하여 나보다 큰덩치를 구할수있다.
 #include <stdio.h>
 using namespace std;
 int n;
