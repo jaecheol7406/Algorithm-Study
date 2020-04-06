@@ -26,39 +26,52 @@ public class Main2 {
 	static StringBuffer getPwd(String s) {
 		StringBuffer pwd = new StringBuffer("");
 		int cursor = 0;
-		
-		int left = 0; int right = 0;
-		boolean meetModify = false;
-		
 		for(int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			
 			if(c == '<') {
-				if(!meetModify) {
-					left++;
-					continue;
-				}
-				
 				if(cursor > 0)
 					cursor--;
 			} else if(c == '>') {
-				if(!meetModify) {
-					right++;
-					continue;
-				}
-				
 				if(cursor < pwd.length())
 					cursor++;
 			} else if(c == '-') {
-				int min = Integer.min(left, right);
-				
-				
 				if(cursor == 0)
 					continue;
-			
-				pwd.replace(--cursor, cursor + 1, "");
+				
+				int erase = 1;
+				while(true) {
+					i++;
+					if(i == s.length())
+						break;
+					
+					c = s.charAt(i);
+					if(c != '-')
+						break;
+					
+					erase++;
+				}
+				i--;
+				pwd.delete(Integer.max(cursor - erase, 0), cursor);
+				cursor -= erase;
+				if(cursor < 0)
+					cursor = 0;
 			} else {
-				pwd.insert(cursor++, c);
+				String st = String.valueOf(c);
+				while(true) {
+					i++;
+					if(i == s.length())
+						break;
+					
+					c = s.charAt(i);
+					if(c == '<' || c == '>' || c == '-')
+						break;
+					
+					st += c;
+				}
+				i--;
+				pwd.insert(cursor, st);
+				cursor += st.length();
 			}
 		}
 		return pwd;
