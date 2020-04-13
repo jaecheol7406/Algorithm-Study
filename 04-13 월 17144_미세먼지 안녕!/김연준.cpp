@@ -23,14 +23,19 @@ int board[51][51];
 int t_board[51][51];
 int dx[4] = { 1,0,-1,0 };
 int dy[4] = { 0,1,0,-1 };
-vector<pair<int, int>> aircleaner;
+int air_top = -1;
+int air_bottom;
 void Input() {
 	cin >> R >> C >> T;
 	for (int i = 0; i < R; i++) {
 		for (int j = 0; j < C; j++) {
 			cin >> board[i][j];
-			if(board[i][j]==-1)
-				aircleaner.push_back({ i,j });
+			if (board[i][j] == -1) {
+				if (air_top == -1)
+					air_top = i;
+				else
+					air_bottom = i;
+			}
 		}
 	}
 }
@@ -46,9 +51,9 @@ void Spread() {
 				int ny = j + dy[k];
 				if (nx < 0 || nx >= R || ny < 0 || ny >= C)
 					continue;
-				if (nx == aircleaner[0].first && ny == aircleaner[0].second)
+				if (nx == air_top && ny == 0)
 					continue;
-				if (nx == aircleaner[1].first && ny == aircleaner[1].second)
+				if (nx == air_bottom && ny == 0)
 					continue;
 				t_board[nx][ny] += board[i][j] / 5;
 				cnt++;
@@ -64,31 +69,27 @@ void Spread() {
 }
 void actAir() {
 	//위쪽 바람
-	int start_x = aircleaner[0].first;
-	int start_y = aircleaner[0].second;
 	int dir = 2;
-	int nx = start_x - 1;
-	int ny = start_y;
-	while (!(nx==start_x && ny==start_y+1)) {
+	int nx = air_top - 1;
+	int ny = 0;
+	while (!(nx==air_top && ny==1)) {
 		board[nx][ny] = board[nx + dx[dir]][ny + dy[dir]];
 		nx = nx + dx[dir];
 		ny = ny + dy[dir];
-		if (nx == 0 && ny == 0 || nx == 0 && ny == C - 1 || nx == start_x && ny == C - 1)
+		if (nx == 0 && ny == 0 || nx == 0 && ny == C - 1 || nx == air_top && ny == C - 1)
 			dir = (dir + 3) % 4;
 
 	}
 	board[nx][ny] = 0;
 	//아래쪽 바람
-	start_x = aircleaner[1].first;
-	start_y = aircleaner[1].second;
 	dir = 0;
-	nx = start_x + 1;
-	ny = start_y;
-	while (!(nx == start_x && ny == start_y + 1)) {
+	nx = air_bottom + 1;
+	ny = 0;
+	while (!(nx == air_bottom && ny == 1)) {
 		board[nx][ny] = board[nx + dx[dir]][ny + dy[dir]];
 		nx = nx + dx[dir];
 		ny = ny + dy[dir];
-		if (nx == R-1 && ny == 0 || nx == R-1 && ny == C - 1 || nx == start_x && ny == C - 1)
+		if (nx == R-1 && ny == 0 || nx == R-1 && ny == C - 1 || nx == air_bottom && ny == C - 1)
 			dir = (dir + 1) % 4;
 
 	}
