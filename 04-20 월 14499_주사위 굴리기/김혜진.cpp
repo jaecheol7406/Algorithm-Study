@@ -1,23 +1,20 @@
 /*
-ì „ê°œë„ ë°©í–¥ ë°”ë€ŒëŠ” ê²ƒì„ ê³ ë ¤í•˜ì§€ ì•Šì€ ì½”ë“œ
 function call: main -> Input -> main
 
-ì´ë™ë°©í–¥ë³„ë¡œ ìœ—ë©´ì„ ê³„ì† ê¸°ë¡
+ÁÖÀÇÁ¡
+- ±¼·¯°¡¸é À§¾Æ·¡ ¸é 2°³¸¸ ¹Ù²î´Â °ÍÀÌ ¾Æ´Ï¶ó, ÃÑ 4°³ÀÇ ¸éÀÌ ¹Ù²î°Ô µÈ´Ù
+(±¼·¯°¡´Â ¸ğ½ÀÀ» »ó»óÇØº¸±â)
+
 */
 #include <iostream>
 using namespace std;
 
 int N, M, x, y, K;
-int tmpX, tmpY;
 int map[30][30];
 int cmd[1010];
 
-int topNum = 1; // ì£¼ì‚¬ìœ„ì˜ ìœ—ë©´
-int topToBtm[7] = { 0, 6, 5, 4, 3, 2, 1 }; // ìœ—ë©´ì´ i ì¼ ë•Œ ë°”ë‹¥
-// íŠ¹ì • ë°©í–¥ìœ¼ë¡œ êµ¬ë¥¸ ë’¤ ìœ—ë©´
-int topAfterRoll[7][5] = { {0, 0, 0, 0, 0},  {0, 4, 3, 5, 2}, {0, 4, 3, 1, 6}, {0, 1, 6, 5, 2}, {0, 6, 1, 5, 2}, {0, 4, 3, 6, 1}, {0, 4, 3, 2, 5} };
-int dir[5][2] = { {0, 0},  {0, 1}, {0, -1}, {-1, 0}, {1, 0} }; // ì£¼ì‚¬ìœ„ê°€ êµ´ëŸ¬ê°ˆ ìœ„ì¹˜ ê³„ì‚°
-int cube[7]; // ì£¼ì‚¬ìœ„ ê° ë²ˆí˜¸ì— ì¨ì ¸ ìˆëŠ” ìˆ«ì
+int cube[7]; // Àü°³µµ´ë·Î 1:À­¸é 2:µŞ¸é 3:¿À¸¥ÂÊ 4:¿ŞÂÊ 5:¾Õ¸é 6:¹Ù´Ú¸é
+int dir[5][2] = { {0, 0},  {0, 1}, {0, -1}, {-1, 0}, {1, 0} }; // ÁÖ»çÀ§°¡ ±¼·¯°¥ À§Ä¡ °è»ê
 
 void Input() {
 	scanf("%d %d %d %d %d\n", &N, &M, &x, &y, &K);
@@ -46,32 +43,51 @@ int main() {
 
 	Input();
 
-	for (int time = 0; time < K; time++) {
-		cout << "time: " << time << "==============" << endl;
-		tmpX = x + dir[cmd[time]][0];
-		tmpY = y + dir[cmd[time]][1];
+	for (int k = 0; k < K; k++) {
+		int tmpX = x + dir[cmd[k]][0];
+		int tmpY = y + dir[cmd[k]][1];
 
 		if (tmpX < 0 || tmpY < 0 || N <= tmpX || M <= tmpY) continue;
 
 		x = tmpX;
 		y = tmpY;
-		cout << "í˜„ì¬ ì£¼ì‚¬ìœ„ ìœ„ì¹˜: " << x << ", " << y << endl;
+		int top = cube[1];
 
-		topNum = topAfterRoll[topNum][cmd[time]]; // ìœ—ë©´ ê°±ì‹ 
-		cout << "í˜„ì¬ ìœ—ë©´: " << topNum << endl;
-		if (map[x][y] == 0) { // ì£¼ì‚¬ìœ„ -> ì§€ë„ë¡œ ë³µì‚¬
-			map[x][y] = cube[topToBtm[topNum]];
-			cout << "map[" << x << "][" << y << "] = " << "cube[" << topToBtm[topNum] << "]" << endl;
+		if (cmd[k] == 1) { // µ¿ÂÊ (¾Õ, µŞ¸éÀÎ 2,5 »©°í ¹Ù²ï´Ù)
+			cube[1] = cube[4];
+			cube[4] = cube[6];
+			cube[6] = cube[3];
+			cube[3] = top;
 		}
-		else { // ì§€ë„ -> ì£¼ì‚¬ìœ„ë¡œ ë³µì‚¬
-			cube[topToBtm[topNum]] = map[x][y];
+		else if (cmd[k] == 2) { // ¼­ÂÊ (¾Õ, µŞ¸éÀÎ 2,5 »©°í ¹Ù²ï´Ù)
+			cube[1] = cube[3];
+			cube[3] = cube[6];
+			cube[6] = cube[4];
+			cube[4] = top;
+		}
+		else if (cmd[k] == 3) { // ºÏÂÊ (¿Ş, ¿À¸¥ÂÊÀÎ 3, 4»©°í ¹Ù²ï´Ù)
+			cube[1] = cube[5];
+			cube[5] = cube[6];
+			cube[6] = cube[2];
+			cube[2] = top;
+		}
+		else if (cmd[k] == 4) { // ³²ÂÊ (¿Ş, ¿À¸¥ÂÊÀÎ 3, 4»©°í ¹Ù²ï´Ù)
+			cube[1] = cube[2];
+			cube[2] = cube[6];
+			cube[6] = cube[5];
+			cube[5] = top;
+		}
+
+		cout << cube[1] << endl;
+
+		// ¾Æ·§¸é°ú Áöµµ¸¦ ºñ±³
+		if (map[x][y] == 0) {
+			map[x][y] = cube[6];
+		}
+		else {
+			cube[6] = map[x][y];
 			map[x][y] = 0;
-			cout << "cube[" << topToBtm[topNum] << "] = " << "map[" << x << "][" << y << "]" << endl;
 		}
-
-		cout << cube[topNum] << endl;
-		Print();
-
 	}
 
 	return 0;
