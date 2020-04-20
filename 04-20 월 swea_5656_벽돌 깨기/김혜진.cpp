@@ -1,6 +1,5 @@
 /*
-디버깅중
-function call: main -> Input -> (DFS -> Throw -> Cross -> Count) -> main
+function call: main -> Input -> (DFS -> Throw -> Cross -> Pull Count) -> main
 
 DFS로 떨어뜨릴 열을 뽑고(순서있음, 중복있음) 차례로 해당 열에 공을 떨어뜨린다
 
