@@ -1,77 +1,170 @@
 /*
-ì „ê°œë„ ë°©í–¥ ë°”ë€ŒëŠ” ê²ƒì„ ê³ ë ¤í•˜ì§€ ì•Šì€ ì½”ë“œ
-function call: main -> Input -> main
+µğ¹ö±ëÁß
+function call: main -> Input -> (DFS -> Throw -> Cross -> Count) -> main
 
-ì´ë™ë°©í–¥ë³„ë¡œ ìœ—ë©´ì„ ê³„ì† ê¸°ë¡
+DFS·Î ¶³¾î¶ß¸± ¿­À» »Ì°í(¼ø¼­ÀÖÀ½, Áßº¹ÀÖÀ½) Â÷·Ê·Î ÇØ´ç ¿­¿¡ °øÀ» ¶³¾î¶ß¸°´Ù
+
+ÁÖÀÇÁ¡
+1. Pull ÇÔ¼ö¸¦ ³õ´Â À§Ä¡
+=> ºí·°ÀÌ ÅÍÁö´Â Å¸ÀÌ¹ÖÀº ¸ğµÎ °°´Ù. Áï Çã°øÀÌ »ı°åÀ» ¶§ ¾Æ·¡·Î ¶³¾îÁö´Â °ÍÀº ¸ğµÎ ÅÍ¶ß¸° ÀÌÈÄ¿¡ ÇØ¾ß ÇÑ´Ù.
+2. boundaryTmpÀÇ Á¸Àç¿Í map[r][c]=0 À» ³õ´Â À§Ä¡
+=> 3Â¥¸® ºí·°ÀÌ ÀÖÀ¸¸é ¿¬¼âÀûÀ¸·Î ÅÍÁú ¾Ö¸¦ ´Ù ÅÍ¶ß¸° ´ÙÀ½¿¡ ¸Ç Ã³À½ ÅÍÁö±â¸¦ À¯¹ßÇÑ °Â¸¦ 0À¸·Î ¹Ù²ã¾ß ÇÑ´Ù.
 */
 #include <iostream>
 using namespace std;
 
-int N, M, x, y, K;
-int tmpX, tmpY;
-int map[30][30];
-int cmd[1010];
+int N, W, H; // N°³ º®µ¹, W´Â ÄÃ·³¼ö, H´Â ·Î¿ì¼ö
 
-int topNum = 1; // ì£¼ì‚¬ìœ„ì˜ ìœ—ë©´
-int topToBtm[7] = { 0, 6, 5, 4, 3, 2, 1 }; // ìœ—ë©´ì´ i ì¼ ë•Œ ë°”ë‹¥
-// íŠ¹ì • ë°©í–¥ìœ¼ë¡œ êµ¬ë¥¸ ë’¤ ìœ—ë©´
-int topAfterRoll[7][5] = { {0, 0, 0, 0, 0},  {0, 4, 3, 5, 2}, {0, 4, 3, 1, 6}, {0, 1, 6, 5, 2}, {0, 6, 1, 5, 2}, {0, 4, 3, 6, 1}, {0, 4, 3, 2, 5} };
-int dir[5][2] = { {0, 0},  {0, 1}, {0, -1}, {-1, 0}, {1, 0} }; // ì£¼ì‚¬ìœ„ê°€ êµ´ëŸ¬ê°ˆ ìœ„ì¹˜ ê³„ì‚°
-int cube[7]; // ì£¼ì‚¬ìœ„ ê° ë²ˆí˜¸ì— ì¨ì ¸ ìˆëŠ” ìˆ«ì
+int map[20][20];
+int backup[20][20];
+
+int minAnswer = 400;
+int picked[5]; // DFS·Î »ÌÀº ¶³¾î¶ß¸± ÄÃ·³ ¹øÈ£
 
 void Input() {
-	scanf("%d %d %d %d %d\n", &N, &M, &x, &y, &K);
 
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < M; j++) {
-			scanf("%d ", &map[i][j]);
+	minAnswer = 400;
+	for (int i = 0; i < 20; i++) {
+		for (int j = 0; j < 20; j++) {
+			map[i][j] = 0;
+			backup[i][j] = 0;
 		}
 	}
 
-	for (int i = 0; i < K; i++) {
-		scanf("%d ", &cmd[i]);
+	scanf("%d %d %d\n", &N, &W, &H);
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			scanf("%d ", &map[i][j]);
+			backup[i][j] = map[i][j];
+		}
 	}
 }
 
 void Print() {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < M; j++) {
-			cout << map[i][j] << " ";
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			printf("%d ", map[i][j]);
 		}
 		cout << endl;
 	}
 }
 
+int dir[4][2] = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
+void Cross(int r, int c, int boundary) {
+	int tmpR, tmpC;
+
+	for (int i = 0; i < 4; i++) {
+		tmpR = r;
+		tmpC = c;
+		for (int t = 0; t < boundary - 1; t++) {
+			tmpR += dir[i][0];
+			tmpC += dir[i][1];
+
+			if (tmpR < 0 || tmpC < 0 || H <= tmpR || W <= tmpC) continue;
+
+			int boundaryTmp = map[tmpR][tmpC];
+			map[tmpR][tmpC] = 0;
+
+			if (boundaryTmp > 1) {
+				Cross(tmpR, tmpC, boundaryTmp);
+				
+			}
+
+		}
+	}
+}
+
+void Pull() { // Çã°ø¿¡ ¶° ÀÖ´Â ¾Öµé ¶¯±â±â
+	for (int j = 0; j < W; j++) {
+		int startRow = -1;
+		for (int i = 0; i < H; i++) {
+			if (map[i][j] != 0 && startRow == -1) startRow = i;
+			if (map[i][j] == 0 && startRow >= 0) { // ¹ØÀ¸·Î ¶¯°ÜÁà¾ß ÇÏ´Â °æ¿ì
+				for (int k = i; k > startRow; k--) {
+					map[k][j] = map[k - 1][j];
+				}
+				map[startRow][j] = 0;
+				startRow++;
+			}
+		}
+	}
+}
+
+void Throw(int c) { // 0Çà r¿­ºÎÅÍ Å½»öÇØ¼­ Á¦ÀÏ ¸ÕÀú ¸¸³ª´Â ºí·°À» ±ü´Ù
+	
+	for (int i = 0; i < H; i++) {
+		if (map[i][c] > 1) { // Á¦ÀÏ ¸ÕÀú ¸¸³­ ºí·°
+			int boundaryTmp = map[i][c];
+			map[i][c] = 0;
+			Cross(i, c, boundaryTmp); // map[i][c]¿¡¼­ ¹İ°æ(map[i][c])¸¸Å­ ±úÁØ´Ù
+			
+			break;
+		}
+		else if (map[i][c] == 1) {
+			map[i][c] = 0;
+			break;
+		}
+	}
+}
+
+void Init() {
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			map[i][j] = backup[i][j];
+		}
+	}
+}
+
+int Count() {
+	int answer = 0;
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			if (map[i][j] != 0) answer++;
+		}
+	}
+	return answer;
+}
+
+
+void DFS(int cnt) {
+	if (cnt >= N) {
+		Init();
+
+		/*for (int i = 0; i < cnt; i++) {
+			cout << picked[i] << " ";
+		}
+		cout << endl;*/
+
+		for (int i = 0; i < cnt; i++) {
+			Throw(picked[i]);
+			Pull();
+		}
+
+		// ³²Àº °Å ¼¼±â
+		int tmp = Count();
+		if (tmp < minAnswer) minAnswer = tmp;
+		return;
+	}
+
+	for (int i = 0; i < W; i++) {
+		picked[cnt] = i;
+		DFS(cnt + 1);
+	}
+}
+
 int main() {
 
-	Input();
+	int T;
+	scanf("%d", &T);
 
-	for (int time = 0; time < K; time++) {
-		cout << "time: " << time << "==============" << endl;
-		tmpX = x + dir[cmd[time]][0];
-		tmpY = y + dir[cmd[time]][1];
+	for (int i = 1; i <= T; i++) {
+		cout << "#" << i << " ";
+		Input();
 
-		if (tmpX < 0 || tmpY < 0 || N <= tmpX || M <= tmpY) continue;
+		// 0~(W-1)ÀÇ ¼ıÀÚ Áß¿¡ N°³¸¦ °í¸¥´Ù. Áßº¹ °¡´ÉÇÏ°í ¼ø¼­ ÀÇ¹Ì ÀÖ´Ù.
+		DFS(0);
 
-		x = tmpX;
-		y = tmpY;
-		cout << "í˜„ì¬ ì£¼ì‚¬ìœ„ ìœ„ì¹˜: " << x << ", " << y << endl;
-
-		topNum = topAfterRoll[topNum][cmd[time]]; // ìœ—ë©´ ê°±ì‹ 
-		cout << "í˜„ì¬ ìœ—ë©´: " << topNum << endl;
-		if (map[x][y] == 0) { // ì£¼ì‚¬ìœ„ -> ì§€ë„ë¡œ ë³µì‚¬
-			map[x][y] = cube[topToBtm[topNum]];
-			cout << "map[" << x << "][" << y << "] = " << "cube[" << topToBtm[topNum] << "]" << endl;
-		}
-		else { // ì§€ë„ -> ì£¼ì‚¬ìœ„ë¡œ ë³µì‚¬
-			cube[topToBtm[topNum]] = map[x][y];
-			map[x][y] = 0;
-			cout << "cube[" << topToBtm[topNum] << "] = " << "map[" << x << "][" << y << "]" << endl;
-		}
-
-		cout << cube[topNum] << endl;
-		Print();
-
+		cout << minAnswer << endl;
 	}
 
 	return 0;
