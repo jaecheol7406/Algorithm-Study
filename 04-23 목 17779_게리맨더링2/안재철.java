@@ -14,7 +14,7 @@ import java.util.Collections;
  * 3. 5가 아니면 4.조건에 따라 re 0,1,2,3에 인구수 더한다.
  * 4. re에서 최대 최소 차이 구해서 minDiff에 갱신한다. 
  */
-public class Main {
+public class No17779_게리맨더링2 {
 	static int N;
 	static int[][] p;
 	static int minDiff = Integer.MAX_VALUE;
@@ -63,7 +63,7 @@ public class Main {
 										continue;
 									
 									while(true) {
-										re[4] += p[++i][++j];
+										re[4] += p[i][++j];
 
 										if(map[i][j] == 5)
 											break;
@@ -74,12 +74,12 @@ public class Main {
 																
 								if(1 <= i && i < x + d1 && 1 <= j && j <= y)
 									re[0] += p[i][j];
-								else if(1 <= i && i <= x + d1 && y < j && j <= N)
+								else if(1 <= i && i <= x + d2 && y < j && j <= N)
 									re[1] += p[i][j];
 								else if(x + d1 <= i && i <= N && 1 <= j && j < y - d1 + d2)
 									re[2] += p[i][j];
 								else
-									re[3]+= p[i][j];
+									re[3] += p[i][j];
 							}
 						}
 						
