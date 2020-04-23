@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 /*
  * 18808_스티커 붙이기
+ * 
+ * main -> stick -> suit, stickIt, rotate
+ * 
+ * 1. main에서 스티커 정보 입력받을 때마다 배열로 만들어서 stick함수로 전달한다.
+ * 2. 이후 회전시키며 4방향에 대해, 맨 위 왼쪽부터  suit 함수로 붙일 수 있는지 확인하고 붙일 수 있으면 stickIt 함수로 붙이고 stick함수 끝낸다.
+ * 3. 회전시키는 함수 rotate는 3번 시행한다.
  */
 public class Main {
 	static int N, M, K;
