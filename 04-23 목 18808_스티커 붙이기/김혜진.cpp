@@ -1,25 +1,9 @@
 /*
-예제 7 오답
-6 8 3
-4 5
-0 0 1 1 1
-1 1 1 0 1
-0 0 1 0 1
-0 0 1 0 0
-5 4
-0 0 1 0
-1 1 1 1
-1 1 0 1
-1 1 0 0
-1 1 0 0
-5 6
-0 0 1 1 1 1
-1 1 1 1 0 0
-1 1 1 1 1 0
-0 1 0 1 0 0
-0 1 0 1 0 0
-답: 22
-출력: 10
+예제는 pass, 제출시 틀렸습니다
+
+1. 스티커별로 모든 출발점에서 가능성을 따진다
+2. 0도에서 붙일 수 있는지 보고, 안 되면 90도 돌리는 식으로 270도까지 확인한다.
+  (배열을 돌려서 확인하는 부분을 너무 어렵게 짜서 시간이 오래 걸림)
 */
 #include <iostream>
 using namespace std;
@@ -78,13 +62,15 @@ bool Tilt(int r, int c, int gakdo) {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < m; j++) {
 				// tmpSticker[i][j] = sticker[(n - 1) - i][j];
-				if (sticker[(n - 1) - i][j] == 1 && map[r + i][c + j] == 1) return false;
+				/*cout << "sticker[" << n - 1 - i << "][" << j << "=" << sticker[n - 1 - i][j] << endl;
+				cout << "map[" << r + i << "][" << c + j << "]=" << map[r + i][c + j] << endl;*/
+				if (sticker[n-1-i][m-1-j] == 1 && map[r + i][c + j] == 1) return false;
 				if (r + i < 0 || c + j < 0 || N <= r + i || M <= c + j) return false;
 			}
 		}
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < m; j++) {
-				if (sticker[n - 1 - i][j] == 1) map[r + i][c + j] = 1;
+				if (sticker[n - 1 - i][m - 1 - j] == 1) map[r + i][c + j] = 1;
 			}
 		}
 
@@ -183,7 +169,7 @@ int main() {
 		// Print();
 	}
 
-	Print();
+	// Print();
 	int answer = 0;
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < M; j++) {
