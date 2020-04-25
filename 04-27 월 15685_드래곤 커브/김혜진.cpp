@@ -1,136 +1,69 @@
+/*
+function call: main -> Draw -> main -> Count
+
+1. 드래곤 커브 방향의 규칙성 파악 (i세대에서는 i+1 세대까지 움직인 방향의 역순에서 +1한 방향으로 움직인다)
+2. 각 세대를 그릴 때
+   - 이전 세대에서 마지막으로 끝난 점을 시작점으로 삼는다
+   - 지금까지의 움직인 방향을 기록한 벡터(mem)를 역순으로 돌며 +1 한 방향으로 움직인다
+   - 움직일 때마다 mem 벡터에 방향을 넣고, 마지막으로 끝난 점을 갱신한다
+*/
 #include <iostream>
+#include <vector>
 using namespace std;
 
+int x, y, d, g;
+int map[110][110];
 int N;
-int c, r, d, g; // 시작열, 시작행, 시작방향, 세대
-int map[120][120];
-int visited[120][120];
 
-int dir[4][2] = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
-int dragonDir[4][2] = { {1, 0}, {0, -1}, {-1, 0}, {0, 1} };
+vector<int> mem;
+int lastX, lastY;
+int thisDir;
 
-int oR;
-int oC;
-
-int answer = 0;
-
-void Print() {
-	for (int i = 0; i <= 100; i++) {
-		for (int j = 0; j <= 100; j++) {
-			cout << map[i][j];
-		}
-		cout << endl;
-	}
-}
-
-void Init() {
-	for (int i = 0; i <= 100; i++) {
-		for (int j = 0; j <= 100; j++) {
-			visited[i][j] = 0;
+int dir[4][2] = { {0, 1}, {-1, 0}, {0, -1}, {1, 0} };
+void Draw() {
+	for (int gen = 1; gen <= g; gen++) { // i세대 그리기
+		for (int idx = mem.size() - 1; idx >= 0; idx--) {
+			thisDir = (mem[idx] + 1) % 4;
+			lastX += dir[thisDir][0];
+			lastY += dir[thisDir][1];
+			map[lastX][lastY] = 1;
+			mem.push_back(thisDir);
 		}
 	}
 }
 
-void NextGen(int n) { // 전 세대 드래곤커브가 끝난 점 & i만 따라하도록
-	Init();
-	// cout << "이번 세대 드래곤커브 시작점: " << oR << "," << oC << endl;
-
-	int bR, bC; // 되짚어가고 있는 점
-	int tmpR, tmpC; // 되짚어가는 중 tmp
-
-	bool exist = false;
-
-	visited[oR][oC] = 1;
-
-	// 되짚어갈 최초 위치 설정
-	bR = oR;
-	bC = oC;
-
-	while (1) {
-		exist = false;
-
-		for (int i = 0; i < 4; i++) {
-			tmpR = bR + dir[i][0];
-			tmpC = bC + dir[i][1];
-			if (visited[tmpR][tmpC] == 1) continue;
-
-			// cout << tmpR << "," << tmpC << "는 이전에 그린 점인가? (" << i << ")" << endl;
-
-			if (map[tmpR][tmpC] == n) { // 이전에 그린 점을 찾아냄
-				// cout << "yes" << endl;
-				exist = true;
-				// 되짚어가는 점 갱신
-				bR = tmpR;
-				bC = tmpC;
-				visited[bR][bC] = 1;
-
-				oR += dragonDir[i][0];
-				oC += dragonDir[i][1];
-
-				map[oR][oC] = n;
-				// cout << oR << "," << oC << "를 새로 색칠" << endl;
-				visited[oR][oC] = 1;
-				break; // 방향 탐색 끝
-			}
-
-		}
-		// 이전에 그린 드래곤커브가 없음
-		if (!exist) {
-			return;
+int Count() {
+	int squareNum = 0;
+	for (int i = 0; i < 100; i++) {
+		for (int j = 0; j < 100; j++) {
+			if (map[i][j] == 0) continue;
+			if (map[i + 1][j] == 0) continue;
+			if (map[i][j + 1] == 0)continue;
+			if (map[i + 1][j + 1] == 0) continue;
+			squareNum++;
 		}
 	}
-}
-
-int squareDir[4][2] = { {0, 0}, {0, 1}, {1, 0}, {1, 1} };
-void GetSquare(int r, int c) {
-	cout << "getSquare(" << r << "," << c << ")" << endl;
-	int tmpR, tmpC;
-	for (int d = 0; d < 4; d++) {
-		tmpR = r + squareDir[d][0];
-		tmpC = c + squareDir[d][1];
-
-		if (tmpR < 0 || 100 < tmpR || tmpC < 0 || 100 < tmpC) return;
-		if (map[tmpR][tmpC] == 0) return;
-	}
-	cout << r << ", " << c << "에서 answer++" << endl;
-	answer++;
+	return squareNum;
 }
 
 int main() {
 
 	scanf("%d\n", &N);
-	for (int i = 1; i <= N; i++) {
-		cout << i << "번 드래곤커브" << endl;
-		scanf("%d %d %d %d\n", &c, &r, &d, &g);
-		r++;
-		c++;
+	for (int i = 0; i < N; i++) {
+		mem.clear();
+		scanf("%d %d %d %d\n", &y, &x, &d, &g);
 
-		// 0세대 그리기
-		oR = r + dir[d][0];
-		oC = c + dir[d][1];
+		// 시작점 및 0세대 그리기
+		map[x][y] = 1;
+		lastX = x + dir[d][0];
+		lastY = y + dir[d][1];
+		map[lastX][lastY] = 1;
+		mem.push_back(d);
 
-		map[r][c] = i; // i번째 드래곤 커브는 i로 적는다
-		map[oR][oC] = i;
-
-		for (int j = 0; j < g; j++) {
-			NextGen(i);
-		}
-
-		
-	}
-	Print();
-	// 4개 원소가 들어가는 정사각형
-	int tmpI, tmpJ;
-
-	
-	for (int i = 0; i < 100; i++) {
-		for (int j = 0; j < 100; j++) {
-			if(map[i][j] != 0)
-				GetSquare(i, j);
-		}
+		Draw();
 	}
 
-	cout << answer;
+	cout << Count();
 
 	return 0;
 }
