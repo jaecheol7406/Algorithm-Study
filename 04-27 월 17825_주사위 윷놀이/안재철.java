@@ -2,17 +2,17 @@ package _2020_04;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 /*
- * 17825_주사위 윷놀이 (디버딩중)
+ * 17825_주사위 윷놀이
  * 
  * main -> solve -> dfs -> GameBoard 클래스의 move
  * 
- * GameBoard 클래스 생성자 4 넣어서 호출. -> Horse로 말 표현, 4개의 Horse 객체가 생성.  게임판은 4개의 배열로 표현. 첫번째는 원모양, 나머지는 파란색에서 출발하는 3개
- * 말이 있다는걸 표시하는 possess 게임판 크기과 같은 크기의 배열로 표신함.
+ * GameBoard 클래스 생성자 4 넣어서 호출. -> Horse로 말 표현, 4개의 Horse 객체가 생성.  게임판은  32개짜리 배열로 표현 (1 ~ 31 인덱스)
+ * 말이 있다는걸 표시하는 possess : 게임판 크기과 같은 크기의 배열로 표시함.
  * 
  * 주사위 10개의 턴에 각각 말 4개씩 해보는 경우의수 4 ^ 10 == 2 ^ 20 만큼 dfs 진행.
  * 각 dfs에서는 생성한 GameBoard 객체의 move 메소드로 선택한 말 이동, 10번 다 이동하면 지금까지의 점수 maxScore에 업데이트.
  */
-public class Main {
+public class No17825_주사위윷놀이 {
 	static int[] nums = new int[10];
 	static GameBoard gb = new GameBoard(4);
 
@@ -57,18 +57,18 @@ public class Main {
 }
 
 class GameBoard implements Cloneable {
-	public static final int[][] board = {
-			{2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40}, 
-			{10,13,16,19,25,30,35,40},
-			{20,22,24,25,30,35,40},
-			{30,28,27,26,25,30,35,40}
-	};
+	public static final int[] board = {-1,
+			2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,
+			13,16,19,
+			22,24,
+			28,27,26,
+			25,30,35};
 	
 	int horseNum;
 
 	Horse[] horses;
 	int score;
-	boolean[][] possess= new boolean[4][];
+	boolean[] possess = new boolean[32];
 	
 	public GameBoard(int horseNum) {
 		this.horseNum = horseNum;
@@ -78,43 +78,93 @@ class GameBoard implements Cloneable {
 			horses[i] = new Horse();
 
 		this.score = 0;
-		
-		for(int i = 0; i < 4; i++)
-			possess[i] = new boolean[board[i].length];
 	}
-
-	public boolean move(int horseIdx, int num) {		
+	
+	public boolean move(int horseIdx, int num) {
 		Horse h = this.horses[horseIdx];
-		int b = h.board;
+		int tempIdx = 0;
 		
-		if(h.idx + num >= board[b].length) { // 해당 보드의 인덱스 넘어가면 도착
-			h.state = 1;
-			possess[b][h.idx] = false; // 원래 칸 더이상 차지하지 않도록 표시
-			return true;
-		} 
+		if(h.idx == 0) {
+			tempIdx = num;
+		} else if(h.idx == 5 || 21 <= h.idx && h.idx <= 23) {
+			tempIdx = h.idx;
+			if(h.idx == 5)
+				tempIdx = 20;
+			
+			tempIdx += num;
+			
+			if(24 <= tempIdx && tempIdx <= 26)
+				tempIdx += 5;
+			else if(tempIdx == 27)
+				tempIdx = 20;
+			else if(tempIdx >= 28) {
+				h.state = 1;
+				possess[h.idx] = false;
+				return true;
+			}
+			
+		} else if(h.idx == 10 || 24 <= h.idx && h.idx <= 25) {
+			tempIdx = h.idx;
+			if(h.idx == 10)
+				tempIdx = 23;
+			
+			tempIdx += num;
+			
+			if(26 <= tempIdx && tempIdx <= 28)
+				tempIdx += 3;
+			else if(tempIdx == 29)
+				tempIdx = 20;
+			else if(tempIdx >= 30) {
+				h.state = 1;
+				possess[h.idx] = false;
+				return true;
+			}
+			
+		} else if(h.idx == 15 || 26 <= h.idx && h.idx <= 28) {
+			tempIdx = h.idx;
+			if(h.idx == 15)
+				tempIdx = 25;
+			
+			tempIdx += num;
+			
+			if(29 <= tempIdx && tempIdx <= 31)
+				;
+			else if(tempIdx == 32)
+				tempIdx = 20;
+			else if(tempIdx >= 33) {
+				h.state = 1;
+				possess[h.idx] = false;
+				return true;
+			}
+			
+		} else if(29 <= h.idx && h.idx <= 31) {
+			tempIdx = h.idx + num;
+			if(tempIdx >= 33) {
+				h.state = 1;
+				possess[h.idx] = false;
+				return true;
+			}
+			
+			if(tempIdx == 32)
+				tempIdx = 20;
+			
+		} else {
+			tempIdx = h.idx + num;
+			if(tempIdx >= 21) {
+				h.state = 1;
+				possess[h.idx] = false;
+				return true;
+			}
+		}
 		
-		if(possess[b][h.idx + num]) // 움직이려는 곳에 말이 있으면 못움직임.
+		if(possess[tempIdx])
 			return false;
 		
-		if(h.idx != -1) // 시작에서 출발한 것이 아니면
-			possess[b][h.idx] = false; // 원래 칸 더이상 차지하지 않도록 표시
-		h.idx += num; // 이동 후
-		this.score += board[b][h.idx]; // 점수 획득
+		possess[h.idx] = false;
+		h.idx = tempIdx;
+		possess[h.idx] = true;
+		this.score += board[h.idx];
 		
-		if(h.board == 0) { // 첫번째 보드인데 파란색 칸으로 이동했다면 가운데 있는 1,2,3 보드로 넘어감.
-			int temp = h.idx;
-			h.idx = 0;
-			if(temp == 4)
-				h.board = 1;
-			else if(temp == 9)
-				h.board = 2;
-			else if(temp == 14)
-				h.board = 3;
-			else
-				h.idx = temp;
-		}
-
-		possess[h.board][h.idx] = true; // 이동 후 해당 칸 차지
 		return true;
 	}
 	
@@ -123,21 +173,18 @@ class GameBoard implements Cloneable {
 		GameBoard copy = (GameBoard)super.clone();
 		for(int i = 0; i < copy.horseNum; i++)
 			copy.horses[i] = this.horses[i].clone();
-		for(int i = 0; i < 4; i++)
-			copy.possess[i] = this.possess[i].clone();
+		copy.possess = this.possess.clone();
 		return copy;
 	}
 }
 
 class Horse implements Cloneable {
 	int state; // 0 : 도착 x(시작 or 보드판 위), 1 : 도착
-	int board; // 0,1,2,3
-	int idx; // 각 보드의 위치 (인덱스)
+	int idx; // 위치
 
 	public Horse() {
 		this.state = 0;
-		this.board = 0;
-		idx = -1;
+		idx = 0;
 	}
 	
 	@Override
