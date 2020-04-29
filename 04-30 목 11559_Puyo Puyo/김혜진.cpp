@@ -88,7 +88,7 @@ bool Check() {
 void Pull() {
 	for (int j = 0; j < 6; j++) {
 		int btm = -1; // 초기상태
-		for (int i = 11; i >= 1; i--) {
+		for (int i = 11; i >= 0; i--) {
 			if (btm == -1 && map[i][j] == '.') { // 비어있는 가장 아래에 있는 곳을 btm에 저장
 				btm = i;
 			}
@@ -116,9 +116,9 @@ int main() {
 			cont = false;
 		}
 
-		Print();
+		//Print();
 		Pull();
-		Print();
+		//Print();
 
 	}
 
