@@ -1,9 +1,54 @@
 /*
-10% 틀렸습니다
+13% 틀렸습니다
 
 예외사항
 - 1 0 2 0 0 0 1 0 0 2 처럼 앞부분에선 연결불가했는데 뒤에서 연결가능한 때
+5 10
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 0 0
+1 0 1 0 0 1 0 1 0 1
+1 1 1 0 0 0 0 1 1 1
+1 1 1 1 1 1 1 1 1 1
+답: 2
+
 - '모든 섬 연결 체크'란 1,2,3이 서로 연결되고 4,5가 연결됐지만 이 두 그룹이 연결 안되면 꽝
+10 6
+0 0 0 1 0 0
+0 0 0 1 0 0
+0 1 0 0 0 1
+0 0 0 0 0 0
+1 1 0 1 1 0
+1 0 0 0 1 0
+1 1 0 0 1 0
+0 0 0 0 1 1
+0 0 0 0 0 0
+0 1 0 0 0 0
+답: 13
+
+- 짧은 다리라도 이미 연결된 섬을 연결한다면 pass
+9 8
+0 0 1 0 0 0 0 1
+0 0 1 1 0 0 0 1
+0 0 1 1 1 0 0 1
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0
+0 0 0 0 1 1 1 1
+0 0 0 0 0 0 1 1
+1 0 0 0 0 0 1 1
+답: 10
+10 7
+1 1 1 1 1 1 1
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+1 0 0 1 0 0 1
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 1 0 0 1
+답: 13
 */
 #include <iostream>
 #include <vector>
@@ -85,7 +130,6 @@ int horDist(int is1, int is2) {
 					startPos = j;
 				}
 				else if (island[i][j] != startedIsland) {
-					if (island[i][j] != is1 && island[i][j] != is2) break; // 중간에 다른 섬이 껴있으면 안 됨
 
 					endPos = j;
 					if (endPos - startPos <= 2) { // 길이가 2 이상이어야 함
@@ -98,7 +142,7 @@ int horDist(int is1, int is2) {
 					break; // 다음 행을 검사하러 가기
 				}
 			}
-			else if (started && island[i][j] != 0) {
+			else if (started && island[i][j] != 0) { // 중간에 다른 섬이 껴있음
 				started = false;
 				continue;
 			}
@@ -131,7 +175,7 @@ int verDist(int is1, int is2) {
 				}
 				else if (island[i][j] != startedIsland) {
 					endPos = i;
-					if (endPos - startPos <= 2) {
+					if (endPos - startPos <= 2) { // 다리 길이는 2 이상
 						started = false;
 						continue;
 					}
@@ -173,7 +217,7 @@ bool cmp(Dist a, Dist b) {
 		return a.is2 < b.is2;
 	}
 	if (a.dist == b.dist) {
-		return a.is1 < a.is1;
+		return a.is1 < b.is1;
 	}
 
 	return a.dist < b.dist;
@@ -199,7 +243,7 @@ int main() {
 
 	// Print();
 
-	// 각 섬별 거리 최소거리 구하기
+	// 각 섬별 거리 최소거리 구하기 (디버깅용)
 	for (int i = 1; i < islandIdx; i++) {
 		for (int j = i + 1; j <= islandIdx; j++) {
 			getDistance(i, j);
@@ -215,17 +259,20 @@ int main() {
 
 	sort(distList.begin(), distList.end(), cmp);
 
-	// int linkedNum = 0;
-	// int linkedArr[7] = { 0, };
 	int uniqueIdx = 0;
 	for (int i = 0; i < distList.size(); i++) {
-		// if (linkedNum >= islandIdx) break;
+		cout << "이번 짧은 다리:" << distList[i].dist << endl;
+		
+		// 완료조건 충족여부==========================================
 		int check = 0;
 		for (int j = 1; j <= 6; j++) if (linked[j] == 1) check++;
+
 		/*for (int j = 1; j <= 6; j++) cout << linked[j] << " ";
-		cout << endl;*/
-		// cout << "check: " << check << "?=" << islandIdx << endl;
+		cout << endl;
+		cout << "check: " << check << "?=" << islandIdx << endl;*/
+
 		if (check == islandIdx) break;
+		// 완료조건 충족여부==========================================
 
 		if (distList[i].dist == 9999) {
 			answer = 9999;
@@ -234,17 +281,17 @@ int main() {
 
 		int is1 = distList[i].is1;
 		int is2 = distList[i].is2;
-		// cout << is1 << "과 " << is2 << endl;
+		cout << is1 << "과 " << is2 << endl;
 
-		if (linked[is1] != 0 && linked[is2] != 0) { // 같이 연결되어있지 않던 두 개가 연결
+		if (linked[is1] != 0 && linked[is2] != 0) { // 이미 어딘가에 연결되어 있는 두 개
+			if (linked[is1] == linked[is2]) continue; // 이미 서로 연결 돼있다면 다리 만들지 않고 pass
 
-			int std;
-			int verse;
+			int std; // 더 작은 수
+			int verse; // 더 큰 수
 			if (linked[is1] > linked[is2]) {
 				std = linked[is2];
 				verse = linked[is1];
 			}
-
 			else {
 				std = linked[is1];
 				verse = linked[is2];
@@ -261,15 +308,14 @@ int main() {
 		}
 		else if (linked[is2] != 0 && linked[is1] == 0) { // is1만 새로 연결
 			linked[is1] = linked[is2];
-			// linkedNum++;
 		}
 		else if (linked[is1] != 0 && linked[is2] == 0) { // is2만 새로 연결
 			linked[is2] = linked[is1];
-			// linkedNum++;
 		}
 		
 
 		answer += distList[i].dist;
+		cout << "다리길이 += " << distList[i].dist << endl;
 
 	}
 
