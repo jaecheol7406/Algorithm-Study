@@ -1,3 +1,5 @@
+// set을 이용해서 중복을 제거했다. dy dx을 이용해서 4방향 브루투포스를 하였다.
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <set>
