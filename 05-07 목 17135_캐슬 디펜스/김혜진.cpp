@@ -1,5 +1,10 @@
 /*
-31% 틀렸습니다
+function call: main -> Input -> (DFS -> Simulate -> BFS) -> main
+
+1. DFS로 궁수를 배치한다
+2. BFS로 거리가 가장 가까워서 쏠 수 있는 적들을 궁수별로 구해둔다
+3. 모든 궁수가 동시에 공격하므로 공격 횟수가 아닌 죽은 적 갯수를 센다
+4. 공격 이후에는 적들은 한 칸씩 아래로 간다
 */
 #include <iostream>
 #include <vector>
@@ -78,7 +83,7 @@ void BFS() {
 		q.pop();
 
 		if (thisPos.d + 1 > D) continue;
-		if (candSize != -1 && thisPos.d + 1 >= candSize) continue; // 거리가 최소가 아닌 애들은 보지 않는다
+		if (candSize != -1 && thisPos.d + 1 > candSize) continue; // 거리가 최소가 아닌 애들은 보지 않는다 (>= 가 아니라 > 여야함: 31%에서 틀린 이유)
 
 		for (int i = 0; i < 3; i++) {
 			tmpR = thisPos.r + dir[i][0];
@@ -87,8 +92,8 @@ void BFS() {
 			if (tmpR < 0 || tmpC < 0 || N <= tmpR || M <= tmpC) continue;
 			if (visited[tmpR][tmpC] == 1) continue;
 			if (candSize != -1 && thisPos.d + 1 > candSize) continue;
+
 			if (map[tmpR][tmpC] == 1) { // 적을 찾음
-				// cout << "적을 찾음. candSize => " << thisPos.d + 1 << endl;
 				candSize = thisPos.d + 1;
 				cands.push_back(Pos{ tmpR, tmpC, thisPos.d + 1 });
 				continue;
@@ -113,7 +118,6 @@ void Simulate() {
 
 		// 모든 궁수가 각자 죽이려는 대상을 찾는다
 		for (int t = 0; t < myList.size(); t++) {
-			// cout << "t:" << t;
 			Pos me = myList[t];
 			Init();
 			q.push(me);
@@ -139,7 +143,7 @@ void Simulate() {
 				tmpAnswer++;
 			}
 		}
-		
+
 		// 적이 한 칸씩 아래로 이동한다
 		for (int i = N - 1; i >= 0; i--) {
 			for (int j = 0; j < M; j++) {
@@ -159,7 +163,7 @@ void Simulate() {
 			}
 			cout << endl;
 		}*/
-		
+
 	}
 	// cout << tmpAnswer << endl;
 	if (tmpAnswer > answer) answer = tmpAnswer;
