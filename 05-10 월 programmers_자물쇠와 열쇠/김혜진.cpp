@@ -1,11 +1,26 @@
 /*
-반례: key [[0, 0, 0], [0, 0, 0], [1, 0, 0]]
-lock [[1, 1, 1, 0], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
-answer: true
- 
-안 되는 이유: 접근방법 자체가 잘못됨 
-현재 오른쪽/아래쪽으로 key가 뻗쳐나가는 걸 처리하지 못함 (key의 크기를 M*M까지로 제한해버림)
-Key가 20*20일 경우 Key는 약 60*60까지의 경우가 가능함
+만약 key가
+0, 0, 0
+1, 0, 0
+0, 1, 1
+
+이고 lock이
+1, 1, 1
+1, 1, 0
+1, 0, 1
+이라면
+
+board 벡터(60*60 크기)에 먼저 lock를 놓고
+00000000000000000...
+00000000000000000...
+00111000000000000...
+00110000000000000...
+00101000000000000...
+00000000000000000...
+00000000000000000...
+
+key를 (0, 0) ~ (4, 4)를 시작점으로 하게끔 board에 더한 뒤,
+board의 lock이 적힌 범위에서 2 또는 0이 발견되지 않으면 true
 */
 #include <string>
 #include <vector>
@@ -13,130 +28,91 @@ Key가 20*20일 경우 Key는 약 60*60까지의 경우가 가능함
 
 using namespace std;
 
-int posKey[20][20];
-int thisKey[20][20];
+int N, M;
+vector<vector<int>> board(60, vector<int>(60, 0));
+vector<vector<int>> backup(60, vector<int>(60, 0));
 
-void InitPos () {
-    for(int i=0; i<20; i++) {
-        for(int j=0; j<20; j++) {
-            posKey[i][j] = 0;
-        }
-    }
-}
-
-void InitThis () {
-    for(int i=0; i<20; i++) {
-        for(int j=0; j<20; j++) {
-            thisKey[i][j] = 0;
-        }
-    }
-}
-
-void PrintPos(int M) {
-    for(int i=0; i<M; i++) {
-        for(int j=0; j<M; j++) {
-            cout << posKey[i][j];
-        }
-        cout << endl;
-    }
-}
-
-void PrintThis(int M) {
-    for(int i=0; i<M; i++) {
-        for(int j=0; j<M; j++) {
-            cout << thisKey[i][j];
-        }
-        cout << endl;
-    }
-}
-
-void Round(int M, vector<vector<int>> key, int gakdo) {
-    if(gakdo == 90) {
-        for(int j=0; j<M; j++) {
-            for(int i=0; i<M; i++) {
-                thisKey[j][i] = posKey[(M-1)-i][j];
-            }
-        }
-    }
-    else if(gakdo == 180) {
-        for(int j=0; j<M; j++) {
-            for(int i=0; i<M; i++) {
-                thisKey[i][j] = posKey[(M-1)-i][(M-1)-j];
-            }
-        }
-    }
-    else if(gakdo == 270) {
-        for(int j=0; j<M; j++) {
-             for(int i=0; i<M; i++) {
-                thisKey[j][i] = posKey[i][(M-1)-j];
-            }
-        }
-    }
-    else if(gakdo == 0) {
+void Rotate(vector<vector<int>> &key) {
+    vector<vector<int>> tmp(M, vector<int>(M, 0));
+    
+    for(int j=0; j<M; j++) {
         for(int i=0; i<M; i++) {
-            for(int j=0; j<M; j++) {
-                thisKey[i][j] = posKey[i][j];
-            }
-        }
-    }
-}
-
-bool Test(int M, int N, vector<vector<int>> lock) { // M != N인 경우를 생각해야 함
-    for(int i=0; i<N; i++) {
-        for(int j=0; j<N;j++) {
-            /*if(lock[i][j] == 0 && thisKey[i][j] != 1 ) // 홈0인데 돌기1가 아니다
-                return false;
-            if(lock[i][j] == 1 && thisKey[i][j] == 1) // 돌기1인데 돌기1이다
-                return false;*/
-            if(lock[i][j] == 0) { // 홈인데
-                if(i>=M || j>=M) return false; // key가 그 범위까지 못 간다
-                if(thisKey[i][j] != 1) return false;
-            }
-            else if(lock[i][j] == 1) {
-                if(i>=M || j>=M) continue;
-                if(thisKey[i][j] == 1) return false;
-            }
+            tmp[j][i] = key[(M-1)-i][j];
         }
     }
     
+    key = tmp;
+}
+
+bool Test() {
+    for(int i=M-1; i<(M-1)+N; i++) {
+        for(int j=M-1; j<(M-1)+N; j++) {
+            if(board[i][j] == 0) return false;
+            if(board[i][j] == 2) return false;
+        }
+    }
     return true;
 }
 
 bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
-    int M=key.size();
+    N = lock.size();
+    M = key.size();
     
-    int ridx = 0;
-    int cidx = 0;
+    // board 가운데에 lock 놓기
+    for(int i=0; i<N; i++) {
+        for(int j=0; j<N; j++) {
+            board[i+(M-1)][j+(M-1)] = lock[i][j];
+            backup[i+(M-1)][j+(M-1)] = lock[i][j];
+        }
+    }
+    // board 출력
+    /*for(int i=0; i<(M-1)*2+N; i++) {
+        for(int j=0; j<(M-1)*2+N; j++) {
+            cout << board[i][j];
+        }
+        cout << endl;
+    }*/
     
-    // 시작점 정하기
-    for(int rp = -(M-1); rp <= (M-1); rp++) {
-        for(int cp = -(M-1); cp <= (M-1); cp++) {
-            // cout << "rp: " << rp << " cp: " << cp << endl;
-            ridx = 0;
-            InitPos();
-            
-            for(int i=0; i<M; i++) {
-                ridx = i + rp;
-                if(ridx<0 || ridx>=M) continue;
+    
+    // key를 (0,0) 시작에서부터 (M-1) + (N-1)시작까지 해보기
+    // cout << (M-1) + (N-1);
+    for(int r=0; r<4; r++) {
+        Rotate(key);
+        for(int rp=0; rp<= (M-1)+(N-1); rp++) {
+            for(int cp=0; cp<= (M-1)+(N-1); cp++) {
+                // cout << "rp:" << rp << " cp:" << cp << endl;
+                board = backup; // 초기화
                 
-                cidx = 0;
-                for(int j=0; j<M; j++) {
-                    cidx = j + cp;
-                    if(cidx<0 || cidx>=M) continue;
-                    
-                    posKey[i][j] = key[ridx][cidx];
-                    
+                /*cout << "초기화 직후:" << endl;
+                // board 출력
+                for(int i=0; i<(M-1)*2+N; i++) {
+                    for(int j=0; j<(M-1)*2+N; j++) {
+                        cout << board[i][j];
+                    }
+                    cout << endl;
+                }*/
+
+                // key의 위치 옮기기
+                for(int i=0; i<M; i++){
+                    for(int j=0; j<M; j++) {
+                        board[rp+i][cp+j] += key[i][j];
+                    }
                 }
+
+                /*cout << "key 더한 뒤" << endl;
+                // board 출력
+                for(int i=0; i<(M-1)*2+N; i++) {
+                    for(int j=0; j<(M-1)*2+N; j++) {
+                        cout << board[i][j];
+                    }
+                    cout << endl;
+                }
+                cout << "======" << endl;*/
                 
-            }
-            
-            
-            // 돌려보기
-            for(int gakdo=0; gakdo<=270; gakdo += 90) {
-                Round(M, key, gakdo);
-                /*cout << gakdo << "도로 회전 결과" << endl;
-                PrintThis(M);*/
-                if(Test(M, lock.size(), lock)) return true;
+                if(Test()) {
+                    return true;
+                }
+
             }
         }
     }
